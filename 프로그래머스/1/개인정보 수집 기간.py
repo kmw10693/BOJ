@@ -1,5 +1,5 @@
 def solution(today, terms, privacies):
-    d ={}
+    d = {}
     answer = []
     today_lst = list(map(int,today.split('.'))) # 오늘 날짜 리스트로 변환
     
