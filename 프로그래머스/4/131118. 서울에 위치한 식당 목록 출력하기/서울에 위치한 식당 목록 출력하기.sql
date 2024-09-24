@@ -1,0 +1,6 @@
+-- 코드를 입력하세요
+SELECT R.REST_ID, REST_NAME, FOOD_TYPE, FAVORITES, ADDRESS, ROUND(SUM(REVIEW_SCORE) / count(*), 2) as SCORE from REST_INFO R
+join REST_REVIEW V on R.REST_ID = V.REST_ID
+where ADDRESS like '서울%'
+group by R.REST_ID
+order by SCORE desc, FAVORITES desc
