@@ -10,7 +10,7 @@ fibo[1][1] = 1
 
 for i in range(2, 44):
     fibo[i][0] = fibo[i-1][0] + fibo[i-2][0]
-    fibo[i][1] = fibo[i-1][1] + fibo[i-2][1]
+    fibo[i][1] = fibo[i-1][1] + fibo[i-2][1] // 
     
 for i in range(n):
     k = sys.stdin.readline()
