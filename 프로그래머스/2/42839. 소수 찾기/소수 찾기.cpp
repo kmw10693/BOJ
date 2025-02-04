@@ -4,44 +4,36 @@
 
 using namespace std;
 
-set<int> s;
-vector<char> v;
+int ans = 0;
+map<int, int> m;
 
-int answer = 0;
-
-void check() {
-    for(auto iter = s.begin(); iter != s.end(); iter++) {
-        bool tmp = true;
-        if(*iter == 0 || *iter == 1) tmp = false;
+bool isCheck(int number) {
+    if(number == 0 || number == 1) return false;
+    if(number == 2) return true;
     
-        for(int i=2; i<*iter; i++) {
-            if(*iter == 2) {
-                break;
-            }
-            if(*iter % i == 0) {
-                tmp = false;
-                break;
-            }
+    for(int i=2; i<number; i++) {
+        if(number % i == 0) {
+            return false;
         }
-        if(tmp == true) answer++;
     }
+    return true;
 }
 
 int solution(string numbers) {
-    for (auto n : numbers) {
-        v.push_back(n);
-    }
+    sort(numbers.begin(), numbers.end());
     
-    sort(v.begin(), v.end());
-    for(int i=1; i<=v.size(); i++) {
+    for(int i=1; i<=numbers.size(); i++) {
         do {
-            string tmp = "";
+            string result = "";
             for(int j=0; j<i; j++) {
-                tmp += v[j];
+                result += numbers[j];
             }
-            s.insert(stoi(tmp));
-        } while(next_permutation(v.begin(), v.end()));
+            if(!m[stoi(result)] && isCheck(stoi(result)) == true) {
+                cout << stoi(result) << '\n';
+                ans++;
+                m[stoi(result)]++;
+            }
+        } while(next_permutation(numbers.begin(), numbers.end()));
     }
-    check();
-    return answer;
+    return ans;
 }
