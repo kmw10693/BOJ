@@ -1,16 +1,14 @@
-SELECT E.EMP_NO, E.EMP_NAME, 
-(CASE
-    WHEN AVG(SCORE) >= 96 THEN 'S'
-    WHEN AVG(SCORE) >= 90 THEN 'A'
-    WHEN AVG(SCORE) >= 80 THEN 'B'
-    ELSE 'C' END) AS GRADE, 
-(CASE
-    WHEN AVG(SCORE) >= 96 THEN E.SAL*0.2
-    WHEN AVG(SCORE) >= 90 THEN E.SAL*0.15
-    WHEN AVG(SCORE) >= 80 THEN E.SAL*0.1
-    ELSE 0 END) AS BONUS
-    
-FROM HR_EMPLOYEES E
-    INNER JOIN HR_GRADE G ON E.EMP_NO = G.EMP_NO
-GROUP BY E.EMP_NO
-ORDER BY 1;
+select H.EMP_NO, E.EMP_NAME, (case when 
+                    AVG(SCORE) >= 96 then 'S'
+                    when AVG(SCORE) >= 90 then 'A'
+                    when AVG(SCORE) >= 80 then 'B'
+                    else 'C' END) as GRADE, 
+                    (case 
+                     when AVG(SCORE) >= 96 then E.SAL * 0.2
+                     when AVG(SCORE) >= 90 then E.SAL * 0.15
+                     when AVG(SCORE) >= 80 then E.SAL * 0.1
+                     else 0 end) as BONUS
+                    from HR_GRADE H, HR_EMPLOYEES E 
+where H.EMP_NO = E.EMP_NO
+group by H.EMP_NO
+order by H.EMP_NO;
