@@ -5,19 +5,20 @@
 using namespace std;
 
 vector<int> solution(int brown, int yellow) {
-    int square = brown + yellow;
-    vector<int> v;
-    
-    for(int height=3; height<=sqrt(square); height++){
-        if(square % height == 0) {
-            int width = square / height;
-            
-            if((height-2) * (width-2) == yellow) {
-                v.push_back(width);
-                v.push_back(height);
+    int extent = brown + yellow;
+    int height = 3;
+    vector<int> answer;
+    for(int i=height; i<extent; i++) { 
+        int width = extent / i;
+        
+        if(extent % width == 0) {
+            int yellowExtent = (i-2) * (width-2);
+            if(yellowExtent == yellow) {
+                answer.push_back(width);
+                answer.push_back(i);
                 break;
             }
         }
     }
-    return v;
+    return answer;
 }
