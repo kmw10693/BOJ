@@ -1,53 +1,50 @@
-#include <iostream>
-#include <vector>
-#include <tuple>
-#include <algorithm>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-bool compare(const tuple<int, int, int, int>& t1, const tuple<int, int, int, int>& t2) {
-    // 금, 은, 동메달 순으로 내림차순 비교
-    if (get<1>(t1) != get<1>(t2)) {
-        return get<1>(t1) > get<1>(t2);  // 금메달 우선
-    }
-    if (get<2>(t1) != get<2>(t2)) {
-        return get<2>(t1) > get<2>(t2);  // 은메달 우선
-    }
-    return get<3>(t1) > get<3>(t2);  // 동메달 우선
-}
+int n,k;
 
-int main() {
-    int N, K;
-    cin >> N >> K;
-    
-    vector<tuple<int, int, int, int>> countries;
-    
-    // 국가 정보 입력 받기
-    for (int i = 0; i < N; i++) {
-        int country, gold, silver, bronze;
-        cin >> country >> gold >> silver >> bronze;
-        countries.push_back(make_tuple(country, gold, silver, bronze));
+bool compare(const tuple<int,int,int,int>& t1, const tuple<int,int,int,int>& t2) {
+    if(get<1>(t1) != get<1>(t2)) {
+        return get<1>(t1) > get<1>(t2);
+    }
+    if(get<2>(t1) != get<2>(t2)) {
+        return get<2>(t1) > get<2>(t2);
     }
     
-    // 국가들을 금, 은, 동메달 순으로 정렬
-    sort(countries.begin(), countries.end(), compare);
+    return get<3>(t1) > get<3>(t2);
+}
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
     
-    // K 국가의 순위 찾기
-    int rank = 1;  // 첫 번째 국가부터 시작
-    for (int i = 0; i < N; i++) {
-        // 같은 성적을 가진 국가들이 있으면 공동 순위
-        if (i > 0 && get<1>(countries[i]) == get<1>(countries[i - 1]) &&
-            get<2>(countries[i]) == get<2>(countries[i - 1]) &&
-            get<3>(countries[i]) == get<3>(countries[i - 1])) {
-            // 동일한 순위를 가진 국가들은 동일 등수
+    cin >> n >> k;
+    vector<tuple<int,int,int,int>> v;
+    for(int i=0; i<n; i++) {
+        int cont, gold, silver, dong;
+        cin >> cont >> gold >> silver >> dong;
+        v.push_back(make_tuple(cont, gold, silver, dong));
+    }
+    sort(v.begin(), v.end(), compare);
+    
+    int rank = 1;
+    vector<int> ans(100005, 0);
+    int tmp = 1;
+    // 첫번째는 1위
+    ans[get<0>(v[0])] = 1;
+    
+    for(int i=1; i<n; i++) {
+        // 뒤랑 앞이랑 같으면 rank유지하고, tmp 증가
+        if(get<1>(v[i]) == get<1>(v[i-1]) && get<2>(v[i]) == get<2>(v[i-1]) && get<3>(v[i]) == get<3>(v[i-1])) {
+            ans[get<0>(v[i])] = rank;
+            tmp++;
             continue;
         }
-        if (get<0>(countries[i]) == K) {
-            cout << rank << endl;
-            return 0;
-        }
-        rank++;
+        // 다르면 rank + tmp 만큼 더하기
+        rank += tmp;
+        tmp = 1;
+        ans[get<0>(v[i])] = rank;
     }
     
-    return 0;
+    cout << ans[k];
 }
