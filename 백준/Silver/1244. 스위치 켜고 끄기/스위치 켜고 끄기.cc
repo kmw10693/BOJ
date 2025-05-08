@@ -2,64 +2,56 @@
 
 using namespace std;
 
-int board[105];
-
-int main() {
+int main(){
+    
     cin.tie(0);
     ios::sync_with_stdio(0);
     
     int n;
+    vector<int> v;
+    v.push_back(-1);
+
     cin >> n;
-    
-    for(int i=1; i<=n; i++){
-        int t;
-        cin >> t;
-        board[i] = t;
+    for(int i=0; i<n; i++) {
+        int swt; cin >> swt;
+        v.push_back(swt);
     }
     
-    int c;
-    cin >> c;
-    for(int i=0; i<c; i++){
-        int a,b;
-        cin >> a >> b;
+    int stu_num; cin >> stu_num;
+    for(int i=0; i<stu_num; i++) {
+        int sex, idx; 
+        cin >> sex >> idx;
         
-        if(a == 1) {
-            int t = b;
-            while(true) {
-                if(t > n) break;
-                board[t] = (board[t] == 1) ? 0 : 1;
-                t += b;
-            }
-            
-        }
-        
-        else if (a == 2) {
-            int left = b;
-            int right = b;
-            
-            while(true) {
-                left = left-1;
-                right = right+1;
-                if(left < 1 || right > n) {
-                    left += 1;
-                    right -= 1;
-                    break;
-                }
-                if(board[left] != board[right]) {
-                    left += 1;
-                    right -= 1;
-                    break;
-                }
-            }
-            
-            for(int i=left; i<=right; i++) {
-                board[i] = (board[i] == 1) ? 0 : 1;
+        // 남자면 배수 다 켜고 꺼야지
+        if(sex == 1) {
+            // 1 ~ 부터
+            int basu = 1;
+            while(idx * basu <= n) {
+                v[idx*basu] = !v[idx*basu];
+                basu++;
             }
         }
+        else {
+            // 좌우 대칭이니 idx 감소하면서 0 될때 ㄱㄱ
+            v[idx] = !v[idx];
+            int upper_idx = idx+1;
+            int lower_idx = idx-1;
+            while(true) {
+                if(lower_idx < 1 || upper_idx > n) break;
+                if(v[lower_idx] != v[upper_idx]) break;
+                v[lower_idx] = !v[lower_idx];
+                v[upper_idx] = !v[upper_idx];
+                upper_idx += 1;
+                lower_idx -= 1;
+            }
+        }
+        
     }
-    
     for(int i=1; i<=n; i++) {
-        cout << board[i] << ' ';
-        if(i % 20 == 0) cout << '\n';
+       cout << v[i] << " ";
+       if(i % 20 == 0) {
+           cout << "\n";
+       }
     }
+    
 }
