@@ -1,89 +1,108 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int R, C;
-    static char[][] map;
+    private static int n,m;
+    private static char[][] map;
 
-    static final int[] dx = {-1, 1, 0, 0};  // 상, 하, 좌, 우
-    static final int[] dy = {0, 0, -1, 1};
-
-    static final int TOP = 0, BOTTOM = 1, LEFT = 2, RIGHT = 3;
+    // 위 아래 왼 오른
+    private static int[] dx = {-1, 1, 0, 0};
+    private static int[] dy = {0, 0, -1, 1};
 
     public static void main(String[] args) throws Exception {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        String[] input = in.readLine().split(" ");
-        R = Integer.parseInt(input[0]);
-        C = Integer.parseInt(input[1]);
-        map = new char[R][C];
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
-        for (int i = 0; i < R; i++) {
-            map[i] = in.readLine().toCharArray();
+        map = new char[n][m];
+
+        for(int i=0; i<n; i++) {
+            map[i] = br.readLine().toCharArray();
         }
-
-        for (int i = 0; i < R; i++) {
-            for (int j = 0; j < C; j++) {
-                if (map[i][j] == '.' && check(i, j)) {
-                    return;
-                }
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                if(map[i][j] == '.' && ischeck(i, j)) return;
             }
         }
+
     }
 
-    private static boolean check(int x, int y) {
-        boolean[] connected = new boolean[4];
+    private static boolean ischeck(int x, int y) {
+        boolean top = false;
+        boolean bottom = false;
+        boolean left = false;
+        boolean right = false;
 
-        if (isValid(x + dx[TOP], y + dy[TOP]) && canComeBottom(map[x + dx[TOP]][y + dy[TOP]])) {
-            connected[TOP] = true;
-        }
-        if (isValid(x + dx[BOTTOM], y + dy[BOTTOM]) && canComeTop(map[x + dx[BOTTOM]][y + dy[BOTTOM]])) {
-            connected[BOTTOM] = true;
-        }
-        if (isValid(x + dx[LEFT], y + dy[LEFT]) && canComeRight(map[x + dx[LEFT]][y + dy[LEFT]])) {
-            connected[LEFT] = true;
-        }
-        if (isValid(x + dx[RIGHT], y + dy[RIGHT]) && canComeLeft(map[x + dx[RIGHT]][y + dy[RIGHT]])) {
-            connected[RIGHT] = true;
-        }
+        if(isValid(x + dx[0], y+dy[0]) && goBottom(x+dx[0],y+dy[0])) top = true;
+        if(isValid(x + dx[1], y+dy[1]) && goTop(x+dx[1], y+dy[1])) bottom = true;
+        if(isValid(x + dx[2], y+dy[2]) && goRight(x+dx[2], y+dy[2])) left = true;
+        if(isValid(x + dx[3], y+dy[3]) && goLeft(x+dx[3], y+dy[3])) right  = true;
 
-        char correctPipe = findCorrectPipe(connected);
-        if (correctPipe != '?') {
-            System.out.println((x + 1) + " " + (y + 1) + " " + correctPipe);
+        StringBuilder sb = new StringBuilder();
+        x+=1;
+        y+=1;
+
+        if(left && right && bottom && top) {
+            sb.append(x + " " + y + " " + "+");
+            System.out.println(sb.toString());
             return true;
         }
+        else if(top && bottom) {
+            sb.append(x + " " + y + " " + "|");
+            System.out.println(sb.toString());
+            return true;
+        }
+        else if(left && right) {
+            sb.append(x + " " + y + " " + "-");
+            System.out.println(sb.toString());
+            return true;
+        }
+        else if(bottom && right) {
+            sb.append(x + " " + y + " " + "1");
+            System.out.println(sb.toString());
+            return true;
+        }
+        else if(top && right) {
+            sb.append(x + " " + y + " " + "2");
+            System.out.println(sb.toString());
+            return true;
+        }
+        else if(left && top) {
+            sb.append(x + " " + y + " " + "3");
+            System.out.println(sb.toString());
+            return true;
+        }
+        else if(left && bottom) {
+            sb.append(x + " " + y + " " + "4");
+            System.out.println(sb.toString());
+            return true;
+        }
+        return false;
+    }
+    private static boolean isValid(int x, int y) {
+        return (x>=0 && x<n && y>=0 && y<m);
+    }
 
+    private static boolean goBottom(int x, int y) {
+        if(map[x][y] == '|' || map[x][y] == '+' || map[x][y] == '1' || map[x][y] == '4') return true;
         return false;
     }
 
-    private static char findCorrectPipe(boolean[] connected) {
-        if (connected[TOP] && connected[BOTTOM] && connected[LEFT] && connected[RIGHT]) return '+';
-        if (connected[TOP] && connected[BOTTOM]) return '|';
-        if (connected[LEFT] && connected[RIGHT]) return '-';
-        if (connected[BOTTOM] && connected[RIGHT]) return '1';
-        if (connected[TOP] && connected[RIGHT]) return '2';
-        if (connected[TOP] && connected[LEFT]) return '3';
-        if (connected[BOTTOM] && connected[LEFT]) return '4';
-        return '?';
+    private static boolean goTop(int x, int y) {
+        if(map[x][y] == '|' || map[x][y] == '+' || map[x][y] == '2' || map[x][y] == '3') return true;
+        return false;
     }
 
-    private static boolean canComeTop(char c) {
-        return c == '|' || c == '+' || c == '2' || c == '3';
+    private static boolean goRight(int x, int y) {
+        if(map[x][y] == '-' || map[x][y] == '+' || map[x][y] == '1' || map[x][y] == '2') return true;
+        return false;
     }
 
-    private static boolean canComeBottom(char c) {
-        return c == '|' || c == '+' || c == '1' || c == '4';
-    }
-
-    private static boolean canComeLeft(char c) {
-        return c == '-' || c == '+' || c == '3' || c == '4';
-    }
-
-    private static boolean canComeRight(char c) {
-        return c == '-' || c == '+' || c == '1' || c == '2';
-    }
-
-    private static boolean isValid(int x, int y) {
-        return x >= 0 && x < R && y >= 0 && y < C;
+    private static boolean goLeft(int x, int y) {
+        if(map[x][y] == '-' || map[x][y] == '+' || map[x][y] == '3' || map[x][y] == '4') return true;
+        return false;
     }
 }
