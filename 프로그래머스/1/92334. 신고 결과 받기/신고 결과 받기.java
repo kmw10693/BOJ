@@ -2,31 +2,39 @@ import java.util.*;
 
 class Solution {
     public int[] solution(String[] id_list, String[] report, int k) {
-        int[] answer = new int[id_list.length];
-        Map<String, HashSet<String>> map = new HashMap<>();
-        Map<String, Integer> idxMap = new HashMap<>();
+        // 신고 누적
+        Map<String, Set<String>> reports = new HashMap<>();
+        // 인덱스
+        Map<String, Integer> index = new HashMap<>();
+        // 각 신고당한 횟수
+        Map<String, Integer> ban = new HashMap<>();
         
         for(int i=0; i<id_list.length; i++) {
-            String name = id_list[i];
-            map.put(name, new HashSet<>());
-            idxMap.put(name, i);
+            index.put(id_list[i], i);
+            ban.put(id_list[i], 0);
         }
         
-        for(String s: report) {
-            String[] str = s.split(" ");
-            String from = str[0];
-            String to = str[1];
-            map.get(to).add(from);
+        for(int j=0; j<report.length; j++) {
+            String[] arr = report[j].split(" ");
+            reports.putIfAbsent(arr[0], new HashSet<>());
+            reports.get(arr[0]).add(arr[1]); 
         }
         
-        for(int i=0; i<id_list.length; i++) {
-            HashSet<String> send = map.get(id_list[i]);
-            if(send.size() >= k) {
-                for(String name : send) {
-                    answer[idxMap.get(name)]++;
+        int[] ans = new int[id_list.length];
+        for(String key : reports.keySet()) {
+            for(String keys : reports.get(key)) {
+                ban.put(keys, ban.get(keys) + 1);
+            }
+        }
+        
+        for(String key : reports.keySet()) {
+            for (String keys : reports.get(key)) {
+                if(ban.get(keys) >= k) {
+                    ans[index.get(key)]++;
                 }
             }
         }
-        return answer;
+        return ans;
+        
     }
 }
