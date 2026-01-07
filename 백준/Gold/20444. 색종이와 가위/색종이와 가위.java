@@ -12,7 +12,7 @@ class Main {
         k = Long.parseLong(st.nextToken());
 
         long left = 0;
-        long right = n/2;
+        long right = n;
         while (left <= right) {
             long row = (left + right) / 2;
             long col = (n - row);
