@@ -4,85 +4,63 @@ import java.util.ArrayDeque;
 import java.util.StringTokenizer;
 
 public class Main {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringTokenizer st;
     static int N;
-    static int[] target;
-    static ArrayDeque<Integer> dq;
-
+    static ArrayDeque<Integer> arr;
     public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         N = Integer.parseInt(br.readLine());
-        target = new int[N];
+        int[] ans = new int[N];
+        st = new StringTokenizer(br.readLine());
+        for(int i=0; i<N; i++) {
+            ans[i] = Integer.parseInt(st.nextToken());
+        }
 
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) target[i] = Integer.parseInt(st.nextToken());
-
-        for (int k1 = 1; (1 << k1) <= N; k1++) {
-            for (int k2 = 1; (1 << k2) <= N; k2++) {
-
-                dq = new ArrayDeque<>(N);
-                for (int i = 1; i <= N; i++) dq.addLast(i);
-
-                shuffle(k1);
-                shuffle(k2);
-
-                if (match()) {
-                    System.out.println(k1 + " " + k2);
+        for(int i=1; (1 << i) < N; i++) {
+            for(int j=1; (1 << j) < N; j++) {
+                arr = new ArrayDeque<>();
+                for(int p=1; p<=N; p++) arr.addLast(p);
+                rotate(i);
+                rotate(j);
+                boolean check = true;
+                for(int k=0; k<N; k++) {
+                    if(ans[k] != arr.removeFirst()) check = false;
+                }
+                if(check) {
+                    System.out.print(i);
+                    System.out.print(" ");
+                    System.out.print(j);
                     return;
                 }
             }
         }
     }
-
-    // (2, k) - 섞기
-    static void shuffle(int k) {
-        int t = 1 << k;
-
-        // 1단계: 아래 t장을 위로 (전체 덱을 오른쪽으로 t 회전)
-        for (int i = 0; i < t; i++) {
-            dq.addFirst(dq.pollLast());
+    static void rotate(int k) {
+        // 2^k 위로 올리자
+        int t = (1 << k);
+        for(int i=1; i<=t; i++) {
+            arr.addFirst(arr.removeLast());
         }
 
-        // 이후 단계: "맨 위 t장 중 아래 p장을 위로" 반복
-        for (int step = 1; step <= k; step++) {
-            int p = 1 << (k - step);
-            rotatePrefixRight(t, p);
-            t = p;
+        for(int i=2; i<=k+1; i++) {
+            ArrayDeque<Integer> tmp = new ArrayDeque<>();
+            int move = (1 << (k-i+1));
+            // 일단 후보 넣자
+            // 2 3
+            for(int j=0; j<t; j++) tmp.addLast(arr.removeFirst());
+            ArrayDeque<Integer> tmp2 = new ArrayDeque<>();
+            // 4 5
+            for(int j=0; j<move; j++){
+                tmp2.addFirst(tmp.removeLast());
+            }
+            // 2 3
+            for(int j=0; j<t-move; j++) {
+                arr.addFirst(tmp.removeLast());
+            }
+            for(int j=0; j<move; j++) {
+                arr.addFirst(tmp2.removeLast());
+            }
+            t = move;
         }
-    }
-
-    // 덱의 맨 위 t장(prefix)만 대상으로, 그 중 아래 p장을 맨 위로 올린다.
-    // == prefix(t)를 오른쪽으로 p만큼 회전
-    static void rotatePrefixRight(int t, int p) {
-        ArrayDeque<Integer> prefix = new ArrayDeque<>(t);
-
-        // 1) 맨 위 t장을 분리
-        for (int i = 0; i < t; i++) {
-            prefix.addLast(dq.pollFirst());
-        }
-
-        // 2) prefix의 아래 p장을 moved에 (순서 유지)
-        ArrayDeque<Integer> moved = new ArrayDeque<>(p);
-        for (int i = 0; i < p; i++) {
-            moved.addFirst(prefix.pollLast()); // pollLast 역순 추출 -> addFirst로 다시 순서 복구
-        }
-
-        // 3) 남은 prefix(위쪽 t-p장)를 먼저 덱 앞에 붙임 (순서 유지)
-        while (!prefix.isEmpty()) {
-            dq.addFirst(prefix.pollLast());
-        }
-
-        // 4) moved(아래 p장)를 덱 앞에 붙임 (순서 유지)
-        while (!moved.isEmpty()) {
-            dq.addFirst(moved.pollLast());
-        }
-    }
-
-    static boolean match() {
-        int idx = 0;
-        for (int x : dq) {
-            if (x != target[idx++]) return false;
-        }
-        return true;
     }
 }
