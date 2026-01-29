@@ -1,30 +1,52 @@
 import java.util.*;
+import java.io.*;
 
 class Solution {
     public int solution(String s) {
-        int answer = s.length();
-        int count = 1;
-        for(int i=1; i<=s.length()/2; i++) {
-            StringBuilder sb = new StringBuilder();
-            String base = s.substring(0, i);
-            for(int j=i; j<=s.length(); j+=i) {
-                int lastIdx = Math.min(j+i, s.length());
-                String str = s.substring(j, lastIdx);
-                
-                if(str.equals(base)) {
-                    count++;
+        int result = 999999;
+        
+        for(int i=1; i<=s.length(); i++) {
+            StringBuilder tmps = new StringBuilder();
+            // 처음 문자
+            String compare = s.substring(0, i);
+            int start = i;
+            int cnt = 1;
+            // 비교 문자
+            while(start + i <= s.length()) {
+                String compare2 = s.substring(start, start+i);
+                if(compare.equals(compare2)) {
+                    cnt++;
+                    start += i;
                 } else {
-                    if(count >= 2) {
-                        sb.append(count);
+                    if(cnt >= 2) {
+                        tmps.append(cnt);
+                        tmps.append(compare);
+                    } else if(cnt == 1) {
+                        tmps.append(compare);
                     }
-                    sb.append(base);
-                    base = str;
-                    count = 1;
+                    compare = s.substring(start, start+i);
+                    start += i;
+                    cnt = 1;
                 }
             }
-            sb.append(base);
-            answer = Math.min(answer, sb.length());
+            for(int j=start; j<=s.length(); j++) {
+                String compare2 = s.substring(j, s.length());
+                if(compare.equals(compare2)) {
+                    cnt++;
+                    j += i;
+                } else {
+                    if(cnt >= 2) {
+                        tmps.append(cnt);
+                        tmps.append(compare);
+                    } else if(cnt == 1) {
+                        tmps.append(compare);
+                    }
+                    tmps.append(s.substring(j, s.length()));
+                    break;
+                }
+            }
+            result = Math.min(result, tmps.length());
         }
-        return answer;
+        return result;
     }
 }
