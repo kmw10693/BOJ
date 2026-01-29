@@ -1,20 +1,29 @@
 class Solution {
     public int solution(String s) {
-        int answer = 1;
-        char x = s.charAt(0);
-        int count = 1;
+        int result = 0;
+        char first = s.charAt(0);
+        int o = 1;
+        int x = 0;
         for(int i=1; i<s.length(); i++) {
-            if(count == 0) {
-                answer++;
-                x = s.charAt(i);
+            if(s.charAt(i) != first) {
+                x++;
+            } 
+            else if(s.charAt(i) == first) {
+                o++;
             }
             
-            if(x == s.charAt(i)) {
-                count++;
-            } else {
-                count--;
-            }
+            if(o == x) {
+                result++;
+                if(i+1 < s.length()) {
+                    first = s.charAt(i+1);
+                    x = 0;
+                    o = 1;
+                    i++;
+                } else {
+                    return result;
+                }
+            } 
         }
-        return answer;
+        return result + 1;
     }
 }
