@@ -1,56 +1,59 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-class Main {
+public class Main {
+
     public static void main(String[] args) throws Exception {
-        int T;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        T = Integer.parseInt(br.readLine());
+        StringTokenizer st;
 
-        for(int i=0; i<T; i++) {
-            Queue<Node> q = new LinkedList<>();
-            Queue<Node> pq = new PriorityQueue<>();
-            StringTokenizer st = new StringTokenizer(br.readLine());
+        int T = Integer.parseInt(br.readLine());
+        Queue<Document> q = new ArrayDeque<>();
 
+        while(T-- > 0) {
             int N, M;
+            st = new StringTokenizer(br.readLine());
             N = Integer.parseInt(st.nextToken());
             M = Integer.parseInt(st.nextToken());
+
             st = new StringTokenizer(br.readLine());
-            for(int j=0; j<N; j++) {
-                int pr = Integer.parseInt(st.nextToken());
-                q.add(new Node(pr, j));
-                pq.add(new Node(pr, j));
+            for(int i=0; i<N; i++) {
+                int priority = Integer.parseInt(st.nextToken());
+                q.add(new Document(i, priority));
             }
 
-            int cnt = 1;
-            while (!q.isEmpty() && !pq.isEmpty()) {
-                Node pqcur = pq.poll();
-                Node k = q.peek();
-                while (k.pr != pqcur.pr) {
-                    q.poll();
-                    q.add(k);
-                    k = q.peek();
+            int ans = 1;
+            while (!q.isEmpty()) {
+                Document cur = q.poll();
+
+                boolean isprint = true;
+                for(Document d : q) {
+                    if(cur.priority < d.priority) {
+                        isprint = false;
+                        break;
+                    }
                 }
-                if(q.poll().idx == M) System.out.println(cnt);
-                cnt++;
+
+                if(isprint) {
+                    if(cur.idx == M) {
+                        System.out.println(ans);
+                        break;
+                    } else {
+                        ans++;
+                    }
+                } else {
+                    q.add(cur);
+                }
             }
+            q.clear();
         }
     }
 
-    static class Node implements Comparable<Node> {
-        int pr, idx;
-        Node(int pr, int idx) {
-            this.pr = pr;
+    public static class Document {
+        int idx, priority;
+        Document(int idx, int priority) {
             this.idx = idx;
-        }
-
-        @Override
-        public int compareTo(Node n) {
-            return n.pr - this.pr;
+            this.priority = priority;
         }
     }
 }
