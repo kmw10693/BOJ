@@ -1,50 +1,35 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.SortedMap;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-public class Main {
-    static int N;
-    public static void main(String[] args) throws Exception{
+class Main {
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
-        Queue<Node> q = new PriorityQueue<>();
-
         StringTokenizer st;
+        int N = Integer.parseInt(br.readLine());
+
+        List<int[]> arr = new ArrayList<>();
         for(int i=0; i<N; i++) {
+            int start, end;
             st = new StringTokenizer(br.readLine());
-            int start = Integer.parseInt(st.nextToken());
-            int end = Integer.parseInt(st.nextToken());
-            q.add(new Node(start, end));
+            start = Integer.parseInt(st.nextToken());
+            end = Integer.parseInt(st.nextToken());
+            arr.add(new int[]{start, end});
         }
 
-        int end = 0;
+        Collections.sort(arr, (a, b) -> {
+           if(a[1] == b[1]) return a[0] - b[0];
+           return a[1] - b[1];
+        });
+
+        int start = 0;
         int ans = 0;
-        while (!q.isEmpty()) {
-            Node n = q.poll();
-            if(end > n.start) continue;
-            ans++;
-            end = n.end;
+        for(int[] a : arr) {
+            if(a[0] >= start) {
+                start = a[1];
+                ans++;
+            }
         }
-        System.out.println(ans);
-    }
-    static class Node implements Comparable<Node> {
-        int start, end;
-
-        Node(int start, int end) {
-            this.start = start;
-            this.end = end;
-        }
-
-        @Override
-        public int compareTo(Node n) {
-            if (this.end == n.end) return this.start - n.start;
-            return this.end - n.end;
-        }
+        System.out.print(ans);
     }
 }
