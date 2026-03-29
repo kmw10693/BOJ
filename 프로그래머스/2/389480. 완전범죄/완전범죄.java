@@ -1,44 +1,42 @@
 import java.util.*;
+import java.io.*;
 
 class Solution {
     public int solution(int[][] info, int n, int m) {
-        int INF = 1_000_000_000;
+        int INF = 1000000000;
         
-        // dp[a] = A 흔적이 a일 때 가능한 B 흔적의 최소값
         int[] dp = new int[n];
+        // a가 0개를 훔쳤을때, b의 훔친 갯수 최솟값
         Arrays.fill(dp, INF);
         dp[0] = 0;
         
-        for (int[] item : info) {
-            int aTrace = item[0];
-            int bTrace = item[1];
-            
+        for(int[] eachinfo : info) {
+            int ainfo = eachinfo[0];
+            int binfo = eachinfo[1];
             int[] next = new int[n];
             Arrays.fill(next, INF);
             
-            for (int a = 0; a < n; a++) {
-                if (dp[a] == INF) continue;
+            for(int i=0; i<n; i++) {
+                if(dp[i] == INF) continue;
                 
-                // 1. A도둑이 훔치는 경우
-                int nextA = a + aTrace;
-                if (nextA < n) {
-                    next[nextA] = Math.min(next[nextA], dp[a]);
+                // A가 하나 훔쳤을때
+                int achief = i + ainfo;
+                if(achief < n) {
+                    next[achief] = Math.min(next[achief], dp[i]);
                 }
                 
-                // 2. B도둑이 훔치는 경우
-                int nextB = dp[a] + bTrace;
-                if (nextB < m) {
-                    next[a] = Math.min(next[a], nextB);
+                // b가 훔쳤을때
+                int bchief = dp[i] + binfo;
+                if(bchief < m) {
+                    next[i] = Math.min(next[i], bchief);
                 }
             }
-            
             dp = next;
         }
         
-        for (int a = 0; a < n; a++) {
-            if (dp[a] < m) return a;
+        for(int i=0; i<n; i++) {
+            if(dp[i] < m) return i;
         }
-        
         return -1;
     }
 }
