@@ -1,41 +1,29 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-public class Main {
-
-    static int N;
-    static int[][] map;
-    static int ans = -0x7f7f7f7f;
+class Main {
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
-        map = new int[100][2];
+        int N = Integer.parseInt(br.readLine());
+        int[] tarr = new int[N+1];
+        int[] parr = new int[N+1];
+        int[] dp = new int[N+2];
 
-        for(int i=0; i<N; i++) {
+        for(int i=1; i<=N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            map[i][0] = Integer.parseInt(st.nextToken());
-            map[i][1] = Integer.parseInt(st.nextToken());
-        }
-        dfs(0, 0);
-
-        // 시간복잡도
-        System.out.println(ans);
-    }
-
-    public static void dfs(int index, int sum) {
-        // 종료 조건
-        if(index >= N) {
-            ans = Math.max(ans, sum);
-            return;
+            tarr[i] = Integer.parseInt(st.nextToken());
+            parr[i] = Integer.parseInt(st.nextToken());
         }
 
-        if(index + map[index][0] <= N) {
-            dfs(index + map[index][0], sum + map[index][1]);
-        } else {
-            dfs(index + map[index][0], sum);
+        // dp[i] = i번째 부터 시작할때 최대 수익
+        for(int i=N; i>=1; i--) {
+            if(i + tarr[i] <= N+1) {
+                dp[i] = Math.max(parr[i] + dp[i+tarr[i]], dp[i+1]);
+            } else {
+                dp[i] = dp[i+1];
+            }
         }
-        dfs(index+1, sum);
+        System.out.println(dp[1]);
     }
 }
