@@ -1,63 +1,52 @@
+import java.io.*;
 import java.util.*;
 
 class Solution {
     public int solution(String message, int[][] spoiler_ranges) {
-        int n = message.length();
-        int m = spoiler_ranges.length;
-
-        List<String> spoilerWords = new ArrayList<>();
-        List<Integer> revealTimes = new ArrayList<>();
-        Set<String> normalWords = new HashSet<>();
-
-        int r = 0;
-        int order = 0;
-
-        for (int i = 0; i < n; ) {
-            int start = i;
-            while (i < n && message.charAt(i) != ' ') i++;
-            int end = i - 1;
-
-            String word = message.substring(start, end + 1);
-
-            while (r < m && spoiler_ranges[r][1] < start) r++;
-
-            boolean isSpoiler = false;
-            int last = -1;
-            int t = r;
-
-            while (t < m && spoiler_ranges[t][0] <= end) {
-                isSpoiler = true;
-                last = t;
-                t++;
-            }
-
-            if (isSpoiler) {
-                spoilerWords.add(word);
-                revealTimes.add(last * 100000 + order); // 공개 시점 + 왼쪽부터 순서
-            } else {
-                normalWords.add(word);
-            }
-
-            order++;
-            i++; // 공백 넘기기
+        // 스포일러 문자
+        boolean[] sprange = new boolean[message.length()];
+        
+        for(int[] sr : spoiler_ranges) {
+            for(int i=sr[0]; i<=sr[1]; i++) {
+                sprange[i] = true;
+            }    
         }
-
-        List<Integer> idx = new ArrayList<>();
-        for (int i = 0; i < spoilerWords.size(); i++) idx.add(i);
-
-        idx.sort((a, b) -> Integer.compare(revealTimes.get(a), revealTimes.get(b)));
-
-        int answer = 0;
-        Set<String> seen = new HashSet<>();
-
-        for (int i : idx) {
-            String word = spoilerWords.get(i);
-            if (normalWords.contains(word)) continue;
-            if (seen.contains(word)) continue;
-            seen.add(word);
-            answer++;
+        
+        int st = 0;
+        List<String> allwords = new ArrayList<>();
+        List<Boolean> isSpolier = new ArrayList<>();
+        while(st < message.length()) {
+            if(message.charAt(st) == ' ') {
+                st++;
+                continue;
+            }
+            int tmpstart = st;
+            
+            boolean eachspolier = false;
+            while(st < message.length() && message.charAt(st) != ' ') {
+                if(sprange[st] == true) eachspolier = true;
+                st++;
+            }
+            allwords.add(message.substring(tmpstart, st));
+            isSpolier.add(eachspolier);
         }
-
-        return answer;
+        
+        Set<String> notspoliers = new HashSet<>();
+        for(int i=0; i<allwords.size(); i++) {
+            if(isSpolier.get(i) == true) continue;
+            notspoliers.add(allwords.get(i));
+        }
+        
+        int ans = 0;
+        Set<String> dupspoliers = new HashSet<>();
+        for(int i=0; i<allwords.size(); i++) {
+            String eachword = allwords.get(i);
+            if(isSpolier.get(i) == false) continue;
+            if(notspoliers.contains(eachword)) continue;
+            if(dupspoliers.contains(eachword)) continue;
+            dupspoliers.add(eachword);
+            ans++;
+        }
+        return ans;
     }
 }
