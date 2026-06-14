@@ -1,50 +1,33 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 class Solution {
     public int solution(int[][] signals) {
         
-        List<Character>[] charsignals = new ArrayList[signals.length];
-            
+        List<Character>[] signalList = new ArrayList[signals.length];
         for(int i=0; i<signals.length; i++) {
-            charsignals[i] = new ArrayList<>();
-                
-            int[] eachsignal = signals[i];
-                
-            for(int j=0; j<eachsignal.length; j++) {
-                if(j == 0) {
-                    while(eachsignal[j]-- > 0) {
-                        charsignals[i].add('G');
-                    }
-                } else if(j == 1) {
-                    while(eachsignal[j]-- > 0) {
-                        charsignals[i].add('Y');
-                    }
-                } else if(j == 2) {
-                    while(eachsignal[j]-- > 0) {
-                        charsignals[i].add('R');
-                    }
+            List<Character> eachsignal = new ArrayList<>();
+            
+            while(signals[i][0]-- > 0) eachsignal.add('G');
+            while(signals[i][1]-- > 0) eachsignal.add('Y');
+            while(signals[i][2]-- > 0) eachsignal.add('R');
+            
+            signalList[i] = eachsignal;
+        }
+        
+        int st = 0, end = 2000000;
+        for(int i=st; i<=end; i++) {  
+            boolean canYellow = true;
+            for(int j=0; j<signalList.length; j++) {
+                int eachsize = signalList[j].size();
+                if(signalList[j].get(i%eachsize) != 'Y') {
+                    canYellow = false;
+                    break;
                 }
             }
+            if(canYellow) return i+1;
         }
-        
-        int curtime = 0;
-        int maxtime = 2000000;
-        
-        while(curtime <= maxtime) {
-            
-            boolean isallyellow = true;
-            for(List<Character> charsignal : charsignals) {
-                if(charsignal.get(curtime % (charsignal.size())) != 'Y') isallyellow = false;
-            }
-            
-            if(isallyellow == true) {
-                return curtime + 1;
-            }
-            
-            curtime++;
-        }
-        
         return -1;
+        
     }
 }
