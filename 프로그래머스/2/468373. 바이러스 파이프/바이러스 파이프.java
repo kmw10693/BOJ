@@ -1,59 +1,68 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 class Solution {
-    List<Integer>[][] sortpipes;
-    int ans = -1;
+    int best = 1;
+    List<int[]>[] adj;
+    int n;
     
     public int solution(int n, int infection, int[][] edges, int k) {
+        adj = new ArrayList[n+1];
+        this.n = n;
         
-        sortpipes = new ArrayList[4][n+1];
-        for(int i=0; i<4; i++) {
-            for(int j=0; j<=n; j++) {
-                sortpipes[i][j] = new ArrayList<>();
-            }
-        }
+        for(int i=0; i<=n; i++) adj[i] = new ArrayList<>();
         
         for(int[] edge : edges) {
-            int x = edge[0];
-            int y = edge[1];
-            int type = edge[2];
+            int e1 = edge[0];
+            int e2 = edge[1];
+            int num = edge[2];
             
-            sortpipes[type][x].add(y);
-            sortpipes[type][y].add(x);
+            adj[e1].add(new int[]{e1, e2, num});
+            adj[e2].add(new int[]{e2, e1, num});
         }
         
-        dfs(n, k, 1, new HashSet<>(Set.of(infection)));
-        return ans;
+        boolean[] infectionCnt = new boolean[n+1];
+        infectionCnt[infection] = true;
+        dfs(infectionCnt, k, 0);
+        
+        return best;
     }
     
-    void dfs(int n, int k, int infcounts, Set<Integer> infections) {
-        if(k == 0) {
-            ans = Math.max(ans, infcounts);
-            return;
-        }
+    void dfs(boolean[] infectionCnt, int k, int lastIndex) {
+        int cnt = count(infectionCnt);
+        if(cnt > best) best = cnt;
+        if(k <= 0) return;
         
         for(int i=1; i<=3; i++) {
-            Set<Integer> eachinfections = bfs(infections, i);
-            dfs(n, k-1, eachinfections.size(), eachinfections);
+            if(lastIndex == i) continue;
+            dfs(eachinfect(infectionCnt, i), k-1, i);
         }
     }
     
-    Set<Integer> bfs(Set<Integer> infections, int targetsort) {
-        Set<Integer> tempinfections = new HashSet<>(infections);
-        Queue<Integer> q = new ArrayDeque<>(infections);
+    boolean[] eachinfect(boolean[] infectionCnt, int infidx) {
+        boolean[] tmpInfection = infectionCnt.clone();
+        Deque<Integer> dq = new ArrayDeque<>();
         
-        while(!q.isEmpty()) {
-            int cur = q.poll();
-            
-            for(int nxt: sortpipes[targetsort][cur]) {
-                if(!tempinfections.contains(nxt)) {
-                    tempinfections.add(nxt);
-                    q.add(nxt);
+        for(int i=1; i<=n; i++) if(tmpInfection[i]) dq.push(i);
+        
+        while(!dq.isEmpty()) {
+            int u = dq.pop();
+            for(int[] e : adj[u]) {
+                if(e[2] == infidx && !tmpInfection[e[1]]) {
+                    tmpInfection[e[1]] = true;
+                    dq.push(e[1]);
                 }
             }
         }
-        
-        return tempinfections;
+        return tmpInfection;
+    }
+    
+    
+    int count(boolean[] infectionCnt) {
+        int cnt = 0;
+        for(int i=1; i<=n; i++) {
+            if(infectionCnt[i]) cnt++;
+        }
+        return cnt;
     }
 }
