@@ -1,42 +1,42 @@
 import java.util.*;
-import java.io.*;
 
 class Solution {
     public int solution(int[][] info, int n, int m) {
-        int INF = 1000000000;
+        int maxA = info.length * 3;
+        int INF = Integer.MAX_VALUE;
         
-        int[] dp = new int[n];
-        // a가 0개를 훔쳤을때, b의 훔친 갯수 최솟값
+        int[] dp = new int[maxA + 1];
         Arrays.fill(dp, INF);
+        
         dp[0] = 0;
         
-        for(int[] eachinfo : info) {
-            int ainfo = eachinfo[0];
-            int binfo = eachinfo[1];
-            int[] next = new int[n];
-            Arrays.fill(next, INF);
+        for(int[] in : info) {
+            int aTrace = in[0];
+            int bTrace = in[1];
             
-            for(int i=0; i<n; i++) {
-                if(dp[i] == INF) continue;
+            int[] ndp = new int[maxA + 1];
+            Arrays.fill(ndp, INF);
+            
+            for(int a=0; a<=maxA; a++) {
+                if(dp[a] == INF) continue;
+                int b = dp[a];
                 
-                // A가 하나 훔쳤을때
-                int achief = i + ainfo;
-                if(achief < n) {
-                    next[achief] = Math.min(next[achief], dp[i]);
-                }
+                int na = a + aTrace;
+                if(na <= maxA && b < ndp[na]) ndp[na] = b;
                 
-                // b가 훔쳤을때
-                int bchief = dp[i] + binfo;
-                if(bchief < m) {
-                    next[i] = Math.min(next[i], bchief);
-                }
+                int nb = b + bTrace;
+                if(nb < ndp[a]) ndp[a] = nb;
             }
-            dp = next;
+            dp = ndp;
         }
         
-        for(int i=0; i<n; i++) {
-            if(dp[i] < m) return i;
+        int ans = -1;
+        for(int a=0; a<n; a++) {
+            if(dp[a] < m) {
+                ans = a;
+                break;
+            }
         }
-        return -1;
+        return ans;
     }
 }
