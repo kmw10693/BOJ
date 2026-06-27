@@ -3,28 +3,23 @@ import java.io.*;
 
 class Solution {
     public int solution(int[] players, int m, int k) {
-        List<ServerType> servers = new ArrayList<>();
-        int ans = 0;
         
-        for(int i=0; i<players.length; i++) {
+        int[] expire = new int[24+k+1];
+        int answer = 0;
+        int curserver = 0;
+        
+        for(int i=0; i<24; i++) {
+            curserver -= expire[i];
             
-            for(int j=servers.size()-1; j>=0; j--) {
-                if(servers.get(j).endtime <= i) servers.remove(j);
-            }
-            
-            while(players[i]/m > servers.size()) {
-                servers.add(new ServerType(i+k));
-                ans++;
+            int require = players[i] / m;
+            if(curserver < require) {
+                int sub = require - curserver;
+                
+                curserver += sub;
+                answer += sub;
+                expire[i+k] += sub;
             }
         }
-        return ans;
-    }
-    
-    class ServerType {
-        int endtime;
-        
-        ServerType(int endtime) {
-            this.endtime = endtime;
-        }
+        return answer;
     }
 }
