@@ -1,64 +1,59 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 class Solution {
+    
     public int solution(int k, int n, int[][] reqs) {
-        int total = n-k;
+        int remain = n-k;
         int[] mentos = new int[k+1];
-        
         Arrays.fill(mentos, 1);
         
-        while(total > 0) {
-            int realmentoidx = -1;
-            int eachmintime = Integer.MAX_VALUE;
+        for(int i=1; i<=remain; i++) {
+            int realminidx = -1;
+            int eachtemptime = Integer.MAX_VALUE;
             
-            for(int i=1; i<=k; i++) {
-                mentos[i]++;
-                
-                if(eachmintime > gettotalwaittime(reqs, mentos, k)) {
-                    realmentoidx = i;
-                    eachmintime = gettotalwaittime(reqs, mentos, k);
+            for(int j=1; j<=k; j++) {
+                mentos[j]++;
+                if(eachtemptime > gettotaltime(reqs, k, mentos)) {
+                    realminidx = j;
+                    eachtemptime = gettotaltime(reqs, k, mentos);
                 }
-                mentos[i]--;
+                mentos[j]--;
             }
-            mentos[realmentoidx]++;
-            total--;
+            mentos[realminidx]++;
         }
-        
-        int ans = 0;
-        ans = gettotalwaittime(reqs, mentos, k);
-        return ans;
+        return gettotaltime(reqs, k, mentos);
     }
     
-    private int gettotalwaittime(int[][] reqs, int[] mentos, int k) {
-        int temptime = 0;
-        
+    public int gettotaltime(int[][] reqs, int k, int[] mentos) {
+        int totalwait = 0;
         for(int i=1; i<=k; i++) {
-            temptime += checkmintime(reqs, mentos, i);
+            totalwait += geteachtime(reqs, i, mentos);
         }
-        return temptime;
+        return totalwait;
     }
     
-    public int checkmintime(int[][] reqs, int[] mentos, int menteidx) {
-        int eachmintime = 0;
+    public int geteachtime(int[][] reqs, int menteidx, int[] mentos) {
         Queue<Integer> pq = new PriorityQueue<>();
         
+        int totalwait = 0;
+        
         for(int[] req : reqs) {
-            int startmin = req[0];
+            int starttime = req[0];
             int duration = req[1];
-            int targetdiv = req[2];
+            int idx = req[2];
             
-            if(targetdiv != menteidx) continue;
+            if(menteidx != idx) continue;
             
-            if(pq.size() < mentos[menteidx]) {
-                pq.offer(startmin + duration);
+            if(pq.size() < mentos[idx]) {
+                pq.offer(starttime + duration);
                 continue;
             }
             
-            int lastmin = pq.poll();
-            eachmintime += Math.max(0, lastmin - startmin);
-            pq.offer(Math.max(startmin, lastmin) + duration);
+            int mentoendtime = pq.poll();
+            pq.offer(Math.max(mentoendtime, starttime) + duration);
+            totalwait += Math.max(0, mentoendtime - starttime);
         }
-        return eachmintime;
+        return totalwait;
     }
 }
