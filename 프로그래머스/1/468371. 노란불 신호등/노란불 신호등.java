@@ -3,31 +3,37 @@ import java.util.*;
 
 class Solution {
     public int solution(int[][] signals) {
-        
-        List<Character>[] signalList = new ArrayList[signals.length];
+        List<Character>[] arr = new ArrayList[signals.length];
         for(int i=0; i<signals.length; i++) {
-            List<Character> eachsignal = new ArrayList<>();
-            
-            while(signals[i][0]-- > 0) eachsignal.add('G');
-            while(signals[i][1]-- > 0) eachsignal.add('Y');
-            while(signals[i][2]-- > 0) eachsignal.add('R');
-            
-            signalList[i] = eachsignal;
+            arr[i] = new ArrayList<>();
         }
         
-        int st = 0, end = 2000000;
-        for(int i=st; i<=end; i++) {  
-            boolean canYellow = true;
-            for(int j=0; j<signalList.length; j++) {
-                int eachsize = signalList[j].size();
-                if(signalList[j].get(i%eachsize) != 'Y') {
-                    canYellow = false;
-                    break;
-                }
-            }
-            if(canYellow) return i+1;
-        }
+        int idx = 0;
+        for(int[] signal : signals) {
+            
+            int Gcnt = signal[0];
+            int Ycnt = signal[1];
+            int Rcnt = signal[2];
+            
+            for(int i=0; i<Gcnt; i++) arr[idx].add('G');
+            for(int i=0; i<Ycnt; i++) arr[idx].add('Y');
+            for(int i=0; i<Rcnt; i++) arr[idx].add('R');
+            
+            idx++;
+       } 
+        
+       for(int i=0; i<10000000; i++) {
+           boolean check = true;
+           for(int j=0; j<signals.length; j++) {
+               int eachidxsize = arr[j].size();
+               int eachidx = i % eachidxsize;
+               if(arr[j].get(eachidx) != 'Y') {
+                   check = false;
+                   break;
+               }
+           }
+           if(check) return i+1;
+       }
         return -1;
-        
     }
 }
