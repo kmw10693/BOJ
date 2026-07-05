@@ -1,51 +1,48 @@
+
 import java.io.*;
 import java.util.*;
 
 class Solution {
     public int solution(String message, int[][] spoiler_ranges) {
-        // 스포일러 문자
-        boolean[] sprange = new boolean[message.length()];
+        int ans = 0;
+        boolean[] spidx = new boolean[message.length()];
+        Arrays.fill(spidx, false);
         
-        for(int[] sr : spoiler_ranges) {
-            for(int i=sr[0]; i<=sr[1]; i++) {
-                sprange[i] = true;
-            }    
+        for(int[] spr : spoiler_ranges) {
+            int start_range = spr[0];
+            int end_range = spr[1];
+            
+            for(int i=start_range; i<=end_range; i++) {
+                spidx[i] = true;
+            }
         }
+
+        Set<String> spoilerwords = new HashSet<>();
+        List<String> nonspoilerwords = new ArrayList<>();
         
-        int st = 0;
-        List<String> allwords = new ArrayList<>();
-        List<Boolean> isSpolier = new ArrayList<>();
-        while(st < message.length()) {
-            if(message.charAt(st) == ' ') {
-                st++;
+        int startidx = 0;
+        while(startidx < message.length()) {
+            if(message.charAt(startidx) == ' ') {
+                startidx++;
                 continue;
             }
-            int tmpstart = st;
-            
-            boolean eachspolier = false;
-            while(st < message.length() && message.charAt(st) != ' ') {
-                if(sprange[st] == true) eachspolier = true;
-                st++;
+            int eachstartidx = startidx;
+            boolean isspoiler = false;
+            while(startidx < message.length() && message.charAt(startidx) != ' ') {
+                if(spidx[startidx] == true) {
+                    isspoiler = true;
+                }
+                startidx++;
             }
-            allwords.add(message.substring(tmpstart, st));
-            isSpolier.add(eachspolier);
+            String eachword = message.substring(eachstartidx, startidx);
+            if(isspoiler) spoilerwords.add(eachword);
+            else nonspoilerwords.add(eachword);
         }
+        // for(String sw : spoilerwords) System.out.println(sw);
+        // for(String nsw : nonspoilerwords) System.out.println(nsw);
         
-        Set<String> notspoliers = new HashSet<>();
-        for(int i=0; i<allwords.size(); i++) {
-            if(isSpolier.get(i) == true) continue;
-            notspoliers.add(allwords.get(i));
-        }
-        
-        int ans = 0;
-        Set<String> dupspoliers = new HashSet<>();
-        for(int i=0; i<allwords.size(); i++) {
-            String eachword = allwords.get(i);
-            if(isSpolier.get(i) == false) continue;
-            if(notspoliers.contains(eachword)) continue;
-            if(dupspoliers.contains(eachword)) continue;
-            dupspoliers.add(eachword);
-            ans++;
+        for(String sw : spoilerwords) {
+            if(!nonspoilerwords.contains(sw)) ans++;
         }
         return ans;
     }
