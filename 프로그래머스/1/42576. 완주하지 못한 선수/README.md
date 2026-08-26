@@ -1,10 +1,10 @@
 # [level 1] 완주하지 못한 선수 - 42576 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42576) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42576?language=java&gad_source=1&gad_campaignid=23037984604&gbraid=0AAAAAC_c4nDIoTx52KFnpRhQMrxMTMTIX&gclid=Cj0KCQjwnbrUBhDOARIsAKKhPpd2l8RYKCkzYRZlCr1lqM-fGAU1ph78EiJUf1b6qJnIpoHew9NptZkaAlXWEALw_wcB) 
 
 ### 성능 요약
 
-메모리: 95.4 MB, 시간: 82.73 ms
+메모리: 120 MB, 시간: 193.03 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 11월 05일 16:22:47
+2026년 08월 26일 21:27:25
 
 ### 문제 설명
 
