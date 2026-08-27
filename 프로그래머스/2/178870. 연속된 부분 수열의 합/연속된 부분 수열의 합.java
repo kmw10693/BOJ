@@ -1,33 +1,31 @@
 import java.util.*;
 import java.io.*;
-import java.util.*;
 
 class Solution {
     public int[] solution(int[] sequence, int k) {
-        int[] answer = new int[2];
-        int left = 0;
-        int right = 0;
+        int answerleft = 0;
+        int answerright = 0;
+        int minlength = Integer.MAX_VALUE;
         
         int sum = 0;
-        int anssize = Integer.MAX_VALUE;
-        
-        while(right < sequence.length) {
+        int left = 0;
+        for(int right=0; right < sequence.length; right++) {
             sum += sequence[right];
             
-            while(left < sequence.length && sum > k) {
-                sum -= sequence[left++];
+            while(sum > k) {
+                sum -= sequence[left];
+                left++;
             }
             
             if(sum == k) {
-                int size = right + 1 - left;
-                if(anssize > size) {
-                    anssize = size;
-                    answer[0] = left;
-                    answer[1] = right;
+                int distance = right + 1 - left;
+                if(distance < minlength) {
+                    answerleft = left;
+                    answerright = right;
+                    minlength = distance;
                 }
             }
-            right++;
         }
-        return answer;
+        return new int[]{answerleft, answerright};
     }
 }
