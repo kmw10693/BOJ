@@ -3,37 +3,39 @@ import java.io.*;
 
 class Solution {
     public int solution(int[] arrayA, int[] arrayB) {
-        int gcdA = arrayA[0];
+        int gcda = arrayA[0];
+        int gcdb = arrayB[0];
         
         for(int i=1; i<arrayA.length; i++) {
-            gcdA = getgcd(gcdA, arrayA[i]);
+            gcda = gcd(gcda, arrayA[i]);
         }
-        
-        int gcdB = arrayB[0];
-        
         for(int i=1; i<arrayB.length; i++) {
-            gcdB = getgcd(gcdB, arrayB[i]);
+            gcdb = gcd(gcdb, arrayB[i]);
         }
         
-        boolean isbdivided = false;
-        for(int ab : arrayB) {
-            if(ab % gcdA == 0) isbdivided = true;
-        }
+        int ans = 0;
+        if(!candivide(arrayB, gcda)) ans = Math.max(ans, gcda);
+        if(!candivide(arrayA, gcdb)) ans = Math.max(ans, gcdb);
         
-        boolean isadivided = false;
-        for(int aa : arrayA) {
-            if(aa % gcdB == 0) isadivided = true;
-        }
-        
-        if(isbdivided && isadivided) return 0;
-        else if(isbdivided && !isadivided) return gcdB;
-        else if(!isbdivided && isadivided) return gcdA;
-        return Math.max(gcdA, gcdB);
+        return ans;
     }
     
-    public int getgcd(int a, int b) {
-        if(b == 0) return a;
-        return getgcd(b, a%b);
+    public int gcd(int a, int b) {
+        while(b != 0) {
+            int temp = a % b;
+            a = b;
+            b = temp;
+        }
+        return a;
+    }
+    
+    public boolean candivide(int[] arr, int num) {
+        boolean div = false;
+        
+        for(int a : arr) {
+            if(a % num == 0) div = true;
+        }
+        return div;
     }
     
 }
