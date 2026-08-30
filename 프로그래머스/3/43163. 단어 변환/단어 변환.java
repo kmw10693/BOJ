@@ -1,40 +1,50 @@
-import java.util.*;
-import java.io.*;
-
 class Solution {
+    
     int ans = Integer.MAX_VALUE;
+  
     public int solution(String begin, String target, String[] words) {
         for(int i=0; i<words.length; i++) {
-            boolean[] visited = new boolean[words.length];
-            if(checkChar(begin, words[i])) {
-                visited[i] = true;
-                recur(1, words[i], words, visited, target);
-                visited[i] = false;
+
+            int diff = 0;
+            for(int j=0; j<words[i].length(); j++) {
+                if(words[i].charAt(j) != begin.charAt(j)) {
+                    diff++;
+                }
             }
+            
+            if(diff == 1) {
+                boolean[] visited = new boolean[words.length];
+                visited[i] = true;
+                dfs(words[i], visited, 1, words, target);
+             }
         }
-        return ans == Integer.MAX_VALUE ? 0: ans;
+        if(ans == Integer.MAX_VALUE) return 0;
+        else return ans;
     }
-    public void recur(int cnt, String s, String[] words, boolean[] visited, String target) {
-        if(s.equals(target)) {
-            ans = Math.min(cnt, ans);
+    
+    public void dfs(String cur, boolean[] visited, int cnt, String[] words, String target) {
+        if(cur.equals(target)) {
+            ans = Math.min(ans, cnt);
             return;
         }
-        if(cnt > words.length) return;
+        
         for(int i=0; i<words.length; i++) {
             if(visited[i]) continue;
-            visited[i] = true;
-            if(checkChar(s, words[i])) recur(cnt+1, words[i], words, visited, target);
-            visited[i] = false;
+
+            int diff = 0;
+            for(int j=0; j<words[i].length(); j++) {
+                if(words[i].charAt(j) != cur.charAt(j)) {
+                    diff++;
+                }
+            }
+            
+            if(diff == 1) {
+                visited[i] = true;
+                dfs(words[i], visited, cnt+1, words, target);
+                visited[i] = false;
+             }
         }
+       
     }
-    public boolean checkChar(String begin, String words) {
-        int notdup = 0;
-        for(int i=0; i<begin.length(); i++) {
-            if(begin.charAt(i) != words.charAt(i)) notdup++;
-        }
-        if(notdup == 1) {
-            return true;
-        }
-        return false;
-    }
+    
 }
