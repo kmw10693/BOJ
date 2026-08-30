@@ -3,45 +3,44 @@ import java.io.*;
 
 class Solution {
     int[] parent;
-    
     public int solution(int n, int[][] costs) {
         parent = new int[n];
+        
         for(int i=0; i<n; i++) {
             parent[i] = i;
         }
         
-        Arrays.sort(costs, (a,b) -> a[2] - b[2]);
         int answer = 0;
-        int count = 0;
-        
-        for(int[] cost : costs) {
-            int a = cost[0];
-            int b = cost[1];
-            int c = cost[2];
+        int anscost = 0;
+        Arrays.sort(costs, (a,b) -> a[2] - b[2]);
+        for(int[] c : costs) {
+            int from = c[0];
+            int to = c[1];
+            int cost = c[2];
             
-            if(find(a) != find(b)) {
-                union(a, b);
-                
-                answer += c;
-                count++;
-                
-                if(count == n-1) {
-                    return answer;
-                }
+            if(find(from) != find(to)) {
+                union(from, to);
+                answer++;
+                anscost += cost;
+            }
+            if(answer == n-1) {
+                break;
             }
         }
-        return -1;
+        return anscost;
     }
     
-    public int find(int x) {
-        if(parent[x] == x) return x;
-        
-        return parent[x] = find(parent[x]);
+    public int find(int a) {
+        if(parent[a] == a) return a;
+        return parent[a] = find(parent[a]);
     }
     
     public void union(int a, int b) {
-        if(find(a) != find(b)) {
-            parent[find(b)] = find(a);
+        int p1 = find(a);
+        int p2 = find(b);
+        
+        if(p1 != p2) {
+            parent[p2] = p1;
         }
     }
 }
