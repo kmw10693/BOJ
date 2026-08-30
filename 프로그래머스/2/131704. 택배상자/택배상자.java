@@ -3,45 +3,26 @@ import java.io.*;
 
 class Solution {
     public int solution(int[] order) {
-        int answer = 0;
-        Queue<Integer> main = new ArrayDeque<>();
-        Stack<Integer> sub = new Stack<>();
-
-        for(int i=1; i<=order.length; i++) {
-            main.add(i);
-        }
-
+        Stack<Integer> s = new Stack<>();
+        int box = 1;
+        
+        int ans = 0;
         for(int o : order) {
-            boolean qcheck = false;
-            while(!main.isEmpty()) {
-                int top = main.peek();
-                if(top < o) {
-                    main.poll();
-                    sub.push(top);
-                }
-                else if(top == o) {
-                    main.poll();
-                    answer++;
-                    qcheck = true;
-                    break;
-                }
-                else break;
+            while(box < o) {
+                s.push(box);
+                box++;
             }
-
-            if(qcheck) continue;
-
-            boolean scheck = false;
-            if(!sub.isEmpty()) {
-                int top = sub.peek();
-                if(top == o) {
-                    answer++;
-                    sub.pop();
-                    scheck = true;
-                }
+            
+            if(box == o) {
+                box++;
+                ans++;
+            } else if(!s.isEmpty() && s.peek() == o) {
+                s.pop();
+                ans++;
+            } else {
+                break;
             }
-
-            if(!qcheck && !scheck) break;
         }
-        return answer;
+        return ans;
     }
 }

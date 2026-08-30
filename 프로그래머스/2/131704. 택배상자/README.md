@@ -1,10 +1,10 @@
 # [level 2] 택배상자 - 131704 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131704) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131704?gad_source=1&gad_campaignid=23037984604&gbraid=0AAAAAC_c4nBp3m_316c0AnEcQuiI5fREw&gclid=CjwKCAjwqc_UBhBKEiwAWbl25uqsYcRguB35yNy8TTxO39VOVEvJd0oE_gTBBITh-YWX0cKtbxtnJxoCHJgQAvD_BwE) 
 
 ### 성능 요약
 
-메모리: 180 MB, 시간: 98.63 ms
+메모리: 168 MB, 시간: 22.31 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 02월 22일 20:41:50
+2026년 08월 30일 19:26:56
 
 ### 문제 설명
 
