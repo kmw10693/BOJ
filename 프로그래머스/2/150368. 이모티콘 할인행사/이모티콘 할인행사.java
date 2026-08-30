@@ -1,63 +1,66 @@
 import java.util.*;
+import java.io.*;
 
 class Solution {
-    // 할인율
-    int[] discountRate = {10, 20, 30, 40};
-    int[] discounts;
-        
-    // 정답
-    int join = 0;
-    int sum = 0;
+    int tempjoin = Integer.MIN_VALUE;
+    int temptotal = Integer.MIN_VALUE;
     
-    // 할인율
+    class Node {
+        int join;
+        int amount;
+        
+        Node(int join, int amount) {
+            this.join = join;
+            this.amount = amount;
+        }
+    }
+ 
+    
+    List<Node> anslist = new ArrayList<>();
+    
     public int[] solution(int[][] users, int[] emoticons) {
-        discounts = new int[emoticons.length];
-        for(int i=0; i<discounts.length; i++) {
-            discounts[i] = -1;
-        }
-        recur(users, 0, emoticons);
-        return new int[]{join, sum};
-    }
-    // 완전 탐색
-    public void recur(int[][] users, int cnt, int[] emoticons) {
-        if(cnt >= emoticons.length) {
-            sum(users, emoticons);
-            return;
-        }
-
-        for(int i=0; i<4; i++) { 
-            if(discounts[cnt] != -1) return;
-            discounts[cnt] = i;
-            recur(users, cnt+1, emoticons);
-            discounts[cnt] = -1;
-        }
+       dfs(users, emoticons, new boolean[emoticons.length], new ArrayList<>());
+        
+       return new int[]{tempjoin, temptotal};       
     }
     
-    public void sum(int[][] users, int[] emoticons) {
-        int tmpjoin = 0;
-        int tmptotal = 0;
+    public void dfs(int[][] users, int[] emoticons, boolean[] isuse, List<Integer> emojis) {
         
-        // 유저의 길이: 2
-        for(int i=0; i<users.length; i++) {
-            double tmpsum =0;
-            // 할인 율: 
-            for(int j=0; j<discounts.length; j++) {
-                if(discountRate[discounts[j]] >= users[i][0]) {
-                    tmpsum += (100-discountRate[discounts[j]])/100.0 * emoticons[j];
+        
+        if(emojis.size() == emoticons.length) {
+            int totaljoin = 0;
+            int totalamount = 0;
+            
+            for(int[] user : users) {
+                
+                double eachtotal = 0;
+                for(int i=0; i<emojis.size(); i++) {
+                    if(emojis.get(i) >= user[0]) {
+                        eachtotal += (double)emoticons[i] * (1-((double)emojis.get(i)/100));
+                    }
+                }
+                
+                if(eachtotal >= user[1]) {
+                    totaljoin++;
+                } else {
+                    totalamount += eachtotal;
                 }
             }
-            if(tmpsum >= users[i][1]) tmpjoin++;
-            else tmptotal += tmpsum;
-             
+            if(tempjoin < totaljoin) {
+                tempjoin = totaljoin;
+                temptotal = totalamount;
+            }
+            else if(tempjoin == totaljoin && temptotal < totalamount) {
+                temptotal = totalamount;
+            }
+            return;
         }
-        if(tmpjoin > join) {
-             join = tmpjoin;
-             sum = tmptotal;
-         }
-         else if(tmpjoin == join && tmptotal > sum) {
-             join = tmpjoin;
-             sum = tmptotal;
-         }
+                
+      
+        for(int j=1; j<=4; j++) {
+            emojis.add(j*10);
+            dfs(users, emoticons, isuse, emojis);
+            emojis.removeLast();
+        }
     }
 }
-
