@@ -2,70 +2,71 @@ import java.util.*;
 import java.io.*;
 
 class Solution {
-    List<List<Integer>> list = new ArrayList<>();
+    boolean isdup = false;
     int ans = 0;
+    Map<String, Integer> map = new HashMap<>();
     
     public int solution(String[][] relation) {
-        // 1개 ~ N개로 개수 판별
-        for(int i=0; i<relation[0].length; i++) {
-            
-            // DFS
-            boolean[] visited = new boolean[relation[0].length];
-            List<Integer> indexlist = new ArrayList<>();
-            dfs(indexlist, 0, i+1, relation, visited);
+        for(int i=1; i<=relation[0].length; i++) {
+            dfs(0, i, "", new boolean[relation[0].length], relation);    
         }
         return ans;
     }
     
-    public void dfs(List<Integer> indexlist, int cnt, int last, String[][] relation, boolean[] visited) {
-        if(cnt >= last) {
-            Map<String, Integer> map = new HashMap<>();
-
-            boolean check = true;
-            for(int i=0; i<relation.length; i++) {
-                String tmp = "";
-                for(int index : indexlist) {
-                    tmp += relation[i][index] + '|';
-                }
-                
-                if(map.containsKey(tmp)) {
-                    check = false;
-                } else {
-                    map.put(tmp, 1);
-                }
+    public void dfs(int cnt, int goal, String s, boolean[] visited, String[][] relation) {
+        if(cnt >= goal) {
+            comb("", s, new boolean[s.length()]);
+            
+            if(isdup) {
+                isdup = false;
+                return;
             }
             
-            boolean check2 = true;
-            for(int i=0; i<list.size(); i++) {
-                List<Integer> lists = list.get(i);
-                Set<Integer> setlist = new HashSet<>();
-                
-                for(int l : lists) setlist.add(l);
-                
-                if(indexlist.containsAll(setlist)) {
-                    check2= false;
-                    break;
-                }
-                if(!check2) break;
-            }
-            if(check && check2) {
-                List<Integer> newlist = new ArrayList<>();
-                for(int v : indexlist) newlist.add(v);
-                list.add(newlist);
+            if(check(s, relation)) {
                 ans++;
+                map.put(s,1);
             }
-            
             return;
         }
         
-        for(int j=0; j<relation[0].length; j++) {
-                if(visited[j]) continue;
-                visited[j] = true;
-                indexlist.add(j);
-                dfs(indexlist, cnt+1, last, relation, visited);
-                visited[j] = false;
-                indexlist.remove(indexlist.size()-1);
+        for(int i=0; i<relation[0].length; i++) {
+            if(visited[i]) continue;
+            if(!s.isEmpty() &&  s.charAt(s.length() - 1) - '0' >= i) continue;
+            
+            visited[i] = true;
+            dfs(cnt+1, goal, s+i, visited, relation);
+            visited[i] = false;
+        }
+             
+    }
+    
+    public boolean check(String s, String[][] relation) {
+        Set<String> s2 = new HashSet<>();
+        
+        for(int i=0; i<relation.length; i++) {
+            String key = "";
+            for(int j=0; j<s.length(); j++) {
+                int k = (s.charAt(j) - '0');
+                key += relation[i][k];
+            }
+            s2.add(key);
+        }
+        return s2.size() == relation.length;
+    }
+               
+    public void comb(String s, String s2, boolean[] visited) {
+        if(s.length() >= s2.length()) return;
+        
+        if(map.containsKey(s)) {
+            isdup = true;
+            return;
         }
         
+        for(int i=0; i<s2.length(); i++) {
+            if(visited[i]) continue;
+            visited[i] = true;
+            comb(s+s2.charAt(i), s2, visited);
+            visited[i] = false;
+        }
     }
 }
