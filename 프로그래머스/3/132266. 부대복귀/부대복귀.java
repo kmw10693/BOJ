@@ -1,45 +1,41 @@
 import java.util.*;
+import java.io.*;
 
 class Solution {
     public int[] solution(int n, int[][] roads, int[] sources, int destination) {
-        List<Integer>[] graph = new ArrayList[n + 1];
-
-        for (int i = 1; i <= n; i++) {
+        List<Integer>[] graph = new ArrayList[n+1];
+        for(int i=1; i<=n; i++) {
             graph[i] = new ArrayList<>();
         }
-
-        for (int[] road : roads) {
+        
+        for(int[] road : roads) {
             int a = road[0];
             int b = road[1];
-
             graph[a].add(b);
             graph[b].add(a);
         }
-
-        int[] dist = new int[n + 1];
-        Arrays.fill(dist, -1);
-
+        int[] cost = new int[n+1];
+        Arrays.fill(cost, -1);
+        
+        cost[destination] = 0;
         Queue<Integer> q = new LinkedList<>();
         q.add(destination);
-        dist[destination] = 0;
-
-        while (!q.isEmpty()) {
+        
+        while(!q.isEmpty()) {
             int cur = q.poll();
-
-            for (int next : graph[cur]) {
-                if (dist[next] != -1) continue;
-
-                dist[next] = dist[cur] + 1;
-                q.add(next);
+            
+            for(int nxt : graph[cur]) {
+                if(cost[nxt] != -1) continue;
+                cost[nxt] = cost[cur] + 1;
+                q.add(nxt);
             }
         }
-
-        int[] answer = new int[sources.length];
-
-        for (int i = 0; i < sources.length; i++) {
-            answer[i] = dist[sources[i]];
+        
+        int[] result = new int[sources.length];
+        for(int i=0; i<result.length; i++) {
+            int eachidx = sources[i];
+            result[i] = cost[eachidx];
         }
-
-        return answer;
+        return result;
     }
 }
