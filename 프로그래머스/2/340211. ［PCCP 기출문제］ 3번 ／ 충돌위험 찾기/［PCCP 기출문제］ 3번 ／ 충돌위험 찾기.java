@@ -1,60 +1,63 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 class Solution {
     public int solution(int[][] points, int[][] routes) {
         List<List<int[]>> arr = new ArrayList<>();
-        int maxsize = 0;
+        int maxsize = -1;
         
         for(int[] route : routes) {
             int startidx = route[0] - 1;
-            List<int[]> eachlist = new ArrayList<>();
             
-            eachlist.add(new int[]{points[startidx][0], points[startidx][1]});
+            int startr = points[startidx][0];
+            int startc = points[startidx][1];
             
-            int r = points[startidx][0];
-            int c = points[startidx][1];
+            List<int[]> eachroute = new ArrayList<>();
+            eachroute.add(new int[]{startr, startc});
             
             for(int i=1; i<route.length; i++) {
-                int dstr = points[route[i]-1][0];
-                int dstc = points[route[i]-1][1];
-                
-                while(r != dstr) {
-                    r += (r < dstr) ? 1 : -1;
-                    eachlist.add(new int[]{r, c});
+                int endidx = route[i] - 1;
+                int endr = points[endidx][0];
+                int endc = points[endidx][1];
+                    
+                while(startr != endr) {
+                    startr += (startr < endr) ? 1 : -1;
+                    eachroute.add(new int[]{startr, startc});
                 }
-                
-                while(c != dstc) {
-                    c += (c < dstc) ? 1 : -1;
-                    eachlist.add(new int[]{r, c});
+
+                while(startc != endc) {
+                    startc += (startc < endc) ? 1 : -1;
+                    eachroute.add(new int[]{startr, startc});
                 }
             }
-            maxsize = Math.max(maxsize, eachlist.size());
-            arr.add(eachlist);
+            arr.add(eachroute);
+            maxsize = Math.max(maxsize, eachroute.size());
         }
         
-        int ans = 0;
-                
+        int result = 0;
+        
         for(int i=0; i<maxsize; i++) {
-            int[][] count = new int[500][500];
-            
-            for(int j=0; j<arr.size(); j++) {
-                List<int[]> eachlist = arr.get(j);
-                if(i >= eachlist.size()) continue;
-                
-                int[] curpos = eachlist.get(i);
-                count[curpos[0]][curpos[1]]++;
-                
+            int[][] present = new int[200][200];
+           
+            for(List<int[]> eacharr : arr) {
+                if(eacharr.size() <= i) continue;
+
+                int[] point = eacharr.get(i);
+                int r = point[0];
+                int c = point[1];
+                    
+                present[r][c]++;
             }
             
-            for(int j=0; j<500; j++) {
-                for(int k=0; k<500; k++) {
-                    if(count[j][k] >= 2) ans++;
+            
+            for(int j=0; j<200; j++) {
+                for(int k=0; k<200; k++) {
+                    if(present[j][k] >= 2) result++;
                 }
             }
         }
+        return result;
         
-        return ans;
         
     }
 }
