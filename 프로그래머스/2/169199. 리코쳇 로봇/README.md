@@ -1,6 +1,6 @@
 # [level 2] 리코쳇 로봇 - 169199 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/169199?gad_source=1&gad_campaignid=23037984604&gbraid=0AAAAAC_c4nAksOMAQXSQLCAtf0_YyCbLL&gclid=Cj0KCQjwteTUBhD4ARIsAEYjs3ri6YYk7_h8VKORf2LZgDNrterZ4O7XSa5bUYTws6cka_2wmdB8wWoaApcREALw_wcB) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/169199) 
 
 ### 성능 요약
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 09월 04일 11:30:32
+2026년 09월 04일 11:30:56
 
 ### 문제 설명
 
