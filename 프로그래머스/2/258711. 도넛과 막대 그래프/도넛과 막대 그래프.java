@@ -1,31 +1,39 @@
 import java.util.*;
+import java.io.*;
 
 class Solution {
     public int[] solution(int[][] edges) {
-        Map<Integer, Integer> ins = new HashMap<>();
-        Map<Integer, Integer> outs = new HashMap<>();
-        int[] answer = new int[4];
+        int[] in = new int[1000005];
+        int[] out = new int[1000005];
+        
+        int maxnode = -1;
+        int graph = 0;
         
         for(int[] edge : edges) {
-            int out = edge[0];
-            int in = edge[1];
-            outs.put(out, outs.getOrDefault(out, 0)+1);
-            ins.put(in, ins.getOrDefault(in, 0) +1);
+            int a = edge[0];
+            int b = edge[1];
+            
+            out[a]++;
+            in[b]++;
+            maxnode = Math.max(maxnode, Math.max(a,b));
         }
         
-        for(int key: outs.keySet()) {
-            if(!ins.containsKey(key)) {
-                if(outs.get(key) >= 2) answer[0] = key;
-            }
-            else if(outs.get(key) == 2) {
-                answer[3]++;
+        int rootnode = -1;
+        for(int i=1; i<=maxnode; i++) {
+            if(in[i] == 0 && out[i] >= 2) {
+                rootnode = i;
+                graph = out[i];
+                break;
             }
         }
-        for(int key: ins.keySet()) {
-            if(!outs.containsKey(key) && ins.get(key) >=1) answer[2]++;
-        }
-        answer[1] = outs.get(answer[0]) - answer[2] - answer[3];
-        return answer;
         
+        int stick = 0;
+        int eight = 0;
+        for(int i=1; i<=maxnode; i++) {
+            if(i == rootnode) continue;
+            if(out[i] == 0 && in[i] >= 1) stick++;
+            else if(in[i] >= 2 && out[i] == 2) eight++;
+        }
+        return new int[]{rootnode, graph-stick-eight, stick, eight};
     }
 }
