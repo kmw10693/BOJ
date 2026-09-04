@@ -3,51 +3,59 @@ import java.io.*;
 
 class Solution {
     public long solution(int[] a, int[][] edges) {
-        int[] parent = new int[a.length];
+        int n = a.length;
+        List<Integer>[] arr = new ArrayList[n];
+        
+        for(int i=0; i<arr.length; i++) {
+            arr[i] = new ArrayList<>();
+        }
+        
+        long[] numbers = new long[n];
         long sum = 0;
-        for(int i=0; i<a.length; i++) {
-            parent[i] = -1;
-            sum += a[i];
+        for(int i=0; i<n; i++) {
+            numbers[i] = a[i];
+            sum += numbers[i];
         }
-        
-        long[] weight = new long[a.length];
-        for(int i=0; i<a.length; i++) {
-            weight[i] = a[i];
-        }
-        
         if(sum != 0) return -1;
-        List<Integer>[] graph = new ArrayList[a.length];
-        for(int i=0; i<a.length; i++) {
-            graph[i] = new ArrayList<>();
-        }
         
         for(int[] edge : edges) {
             int u = edge[0];
             int v = edge[1];
-            graph[u].add(v);
-            graph[v].add(u);
+            
+            arr[u].add(v);
+            arr[v].add(u);
         }
         
-        Stack<Integer> s = new Stack<>();
-        s.push(0);
-        parent[0] = 0;
-        List<Integer> seq = new ArrayList<>();
+        Queue<Integer> q = new LinkedList<>();
+        List<Integer> order = new ArrayList<>();
+        q.add(0);
         
-        while(!s.isEmpty()) {
-            int cur = s.pop();
-            seq.add(cur);
+        boolean[] isvisited = new boolean[n];
+        int[] parent = new int[n];
+        Arrays.fill(parent, -1);
+        
+        while(!q.isEmpty()) {
+            int cur = q.poll();
+            isvisited[cur] = true;
+            order.add(cur);
             
-            for(int nxt : graph[cur]) {
-                if(parent[nxt] != -1) continue;
+            for(int nxt : arr[cur]) {
+                if(isvisited[nxt]) continue;
                 parent[nxt] = cur;
-                s.push(nxt);
+                q.add(nxt);
             }
         }
-        long ans = 0;
-        for(int i=seq.size()-1; i>=0; i--) {
-            ans += Math.abs(weight[seq.get(i)]);
-            weight[parent[seq.get(i)]] += weight[seq.get(i)];
+        
+        
+        long answer = 0;
+        for(int i=order.size()-1; i>0; i--) {
+            int curidx = order.get(i);
+            long num = numbers[curidx];            
+            answer += Math.abs(num);
+            
+            numbers[parent[curidx]] += num;
         }
-        return ans;
+        
+        return answer;
     }
 }
