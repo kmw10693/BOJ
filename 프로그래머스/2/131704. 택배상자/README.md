@@ -1,6 +1,6 @@
 # [level 2] 택배상자 - 131704 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131704?gad_source=1&gad_campaignid=23037984604&gbraid=0AAAAAC_c4nBp3m_316c0AnEcQuiI5fREw&gclid=CjwKCAjwqc_UBhBKEiwAWbl25uqsYcRguB35yNy8TTxO39VOVEvJd0oE_gTBBITh-YWX0cKtbxtnJxoCHJgQAvD_BwE) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131704?gad_source=1&gad_campaignid=22356298761&gbraid=0AAAAAC_c4nDqbzP0FNVfYa6v6D_h-v3oL&gclid=Cj0KCQjw--7UBhCpARIsAGJBpthjKgSAcu1mPBGRY1FaeG82k36EH_wsfXIjSpQBhnzkhA7i_udn3xQaAkJzEALw_wcB) 
 
 ### 성능 요약
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 08월 30일 19:26:56
+2026년 09월 05일 18:44:23
 
 ### 문제 설명
 
