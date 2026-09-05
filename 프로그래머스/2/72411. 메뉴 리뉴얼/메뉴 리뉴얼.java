@@ -2,9 +2,18 @@ import java.util.*;
 import java.io.*;
 
 class Solution {
-    Map<String, Integer> map = new HashMap<>();
-    
+    public void dfs(String s, String origin, int idx, Map<String, Integer> map, int goal) {
+        if(s.length() == goal) {
+            map.put(s, map.getOrDefault(s, 0) + 1);
+            return;
+        }
+        
+        for(int i=idx+1; i<origin.length(); i++) {
+            dfs(s+origin.charAt(i), origin, i, map, goal);
+        }
+    }
     public String[] solution(String[] orders, int[] course) {
+        String[] answer = {};
         
         for(int i=0; i<orders.length; i++) {
             char[] c = orders[i].toCharArray();
@@ -12,48 +21,33 @@ class Solution {
             orders[i] = new String(c);
         }
         
-        for(int c : course) {
-            for(int i=0; i<orders.length; i++) {
-                dfs("", c, 0, -1, orders, orders[i]);
-            }
-        }
-        
         List<String> ans = new ArrayList<>();
         for(int c : course) {
             
-            int maxcount = -1;
-            for(String key : map.keySet()) {
-                int eachcount = map.get(key);
-                if(key.length() != c) continue;
-                if(eachcount > maxcount) maxcount = eachcount; 
+            Map<String, Integer> map = new HashMap<>();
+            for(String o : orders) {
+                dfs("", o, -1, map, c);
             }
             
-            if(maxcount < 2) continue;
+            int maxin = -1;
+            for(String s : map.keySet()) {
+                maxin = Math.max(maxin, map.get(s));
+            }
             
-            for(String key : map.keySet()) {
-                if(map.get(key) == maxcount && key.length() == c) ans.add(key);
+            if(maxin >= 2) {
+                for(String s : map.keySet()) {
+                    if(map.get(s) == maxin) ans.add(s);
+                }                    
             }
         }
         
-        String[] result = new String[ans.size()];
-        for(int i=0; i<result.length; i++) {
-            result[i] = ans.get(i);
+        String[] realans = new String[ans.size()];
+        for(int i=0; i<ans.size(); i++) {
+            realans[i] = ans.get(i);
         }
-        
-        Arrays.sort(result, (a,b) -> a.compareTo(b));
     
-        return result;
-    }
-    
-    public void dfs(String s, int course, int cnt, int lastidx, String[] orders, String order)  {
-        if(cnt >= course) {
-            map.put(s, map.getOrDefault(s, 0) + 1);
-            return;
-        }
         
-        for(int i=0; i<order.length(); i++) {
-            if(lastidx >= i) continue;
-            dfs(s+order.charAt(i), course, cnt+1, i, orders, order);
-        }
+        Arrays.sort(realans);
+        return realans;
     }
 }
