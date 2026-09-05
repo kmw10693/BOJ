@@ -22,7 +22,7 @@ class Solution {
             String allsen = "";
             
             for(int i=0; i<arr.length; i++) {
-                allsen += arr[i];
+                allsen += arr[i] +"|";
             }
             anslist.add(allsen);
             
