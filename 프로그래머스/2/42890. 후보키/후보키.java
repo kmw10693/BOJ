@@ -2,71 +2,59 @@ import java.util.*;
 import java.io.*;
 
 class Solution {
-    boolean isdup = false;
-    int ans = 0;
-    Map<String, Integer> map = new HashMap<>();
+    Set<String> dup = new HashSet<>();
+    
+    public void dfs(String s, String[][] relation, int idx, int cnt, int goal) {
+        if(cnt == goal) {
+                Set<String> dupone = new HashSet<>();
+
+                for(String[] r : relation) {
+                    String tmp = "";
+                    
+                    for(int i=0; i<r.length; i++) {
+                        for(int j=0; j<s.length(); j++) {
+
+                            if(s.charAt(j) == i+'0') {
+                                tmp += r[i] + "|";
+                                break;
+                            }
+                        }    
+                    }
+                    dupone.add(tmp);
+                }
+                
+                if(dupone.size() == relation.length) {
+                    
+                    boolean check = true;
+                                        
+                    for(String d : dup) {
+                        boolean check2 = true;
+                        for(char c : d.toCharArray()) {
+                            if(s.indexOf(c) == -1) {
+                                check2 = false;
+                                break;
+                            } 
+                        }
+                        if(check2) {
+                            check = false;
+                            break;
+                        }
+                    }
+                    if(check) dup.add(s);
+                }
+            return;
+        }
+        
+        for(int i=idx+1; i<relation[0].length; i++) {
+            dfs(s+i, relation, i, cnt+1, goal);
+        }
+    }
     
     public int solution(String[][] relation) {
         for(int i=1; i<=relation[0].length; i++) {
-            dfs(0, i, "", new boolean[relation[0].length], relation);    
-        }
-        return ans;
-    }
-    
-    public void dfs(int cnt, int goal, String s, boolean[] visited, String[][] relation) {
-        if(cnt >= goal) {
-            comb("", s, new boolean[s.length()]);
-            
-            if(isdup) {
-                isdup = false;
-                return;
-            }
-            
-            if(check(s, relation)) {
-                ans++;
-                map.put(s,1);
-            }
-            return;
+            dfs("", relation, -1, 0, i);
         }
         
-        for(int i=0; i<relation[0].length; i++) {
-            if(visited[i]) continue;
-            if(!s.isEmpty() &&  s.charAt(s.length() - 1) - '0' >= i) continue;
-            
-            visited[i] = true;
-            dfs(cnt+1, goal, s+i, visited, relation);
-            visited[i] = false;
-        }
-             
-    }
-    
-    public boolean check(String s, String[][] relation) {
-        Set<String> s2 = new HashSet<>();
-        
-        for(int i=0; i<relation.length; i++) {
-            String key = "";
-            for(int j=0; j<s.length(); j++) {
-                int k = (s.charAt(j) - '0');
-                key += relation[i][k];
-            }
-            s2.add(key);
-        }
-        return s2.size() == relation.length;
-    }
-               
-    public void comb(String s, String s2, boolean[] visited) {
-        if(s.length() >= s2.length()) return;
-        
-        if(map.containsKey(s)) {
-            isdup = true;
-            return;
-        }
-        
-        for(int i=0; i<s2.length(); i++) {
-            if(visited[i]) continue;
-            visited[i] = true;
-            comb(s+s2.charAt(i), s2, visited);
-            visited[i] = false;
-        }
+        return dup.size();
     }
 }
