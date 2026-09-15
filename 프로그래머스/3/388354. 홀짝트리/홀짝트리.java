@@ -17,11 +17,7 @@ class Solution {
             return;
         }
         
-        if(size[rootA] < size[rootB]) {
-            int temp = rootA;
-            rootA = rootB;
-            rootB = temp;
-        }
+        
         
         parent[rootB] = rootA;
         size[rootA] += size[rootB];
