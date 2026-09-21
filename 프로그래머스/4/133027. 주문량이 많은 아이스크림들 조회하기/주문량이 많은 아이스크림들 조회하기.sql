@@ -1,4 +1,5 @@
--- 코드를 입력하세요
+
+
 WITH JULYA AS (
     SELECT SHIPMENT_ID, FLAVOR, sum(TOTAL_ORDER) as TOTAL_ORDER
     from JULY group by FLAVOR
