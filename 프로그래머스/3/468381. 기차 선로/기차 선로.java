@@ -1,110 +1,168 @@
+import java.util.*;
+
 class Solution {
     int n, m;
     int[][] grid;
-    int[][] used;          // 칸별 사용된 선로 입출구(비트마스크)
-    int[] pieceMask;       // 선로 종류(1~7) -> 방향 비트마스크
-
-    // 방향 인덱스: 0=상(U) 1=하(D) 2=좌(L) 3=우(R)
-    final int[] dr  = {-1, 1, 0, 0};
-    final int[] dc  = { 0, 0,-1, 1};
-    final int[] opp = { 1, 0, 3, 2};   // 반대 방향
-    final int[] bit = { 1, 2, 4, 8};   // U,D,L,R 비트
-
+    int[][] board;
+    
+    final int U = 1;
+    final int D = 2;
+    final int L = 4; 
+    final int R = 8; 
+    int[] piece = {
+        0,
+        L|R,
+        U|D,
+        U|D|L|R,
+        U|L,
+        U|R,
+        D|R,
+        D|L
+    };
+    
     public int solution(int[][] grid) {
         this.grid = grid;
-        this.n = grid.length;
-        this.m = grid[0].length;
-        this.used = new int[n][m];
-
-        // 선로 종류별 방향 비트마스크 (U=1, D=2, L=4, R=8)
-        //  1,2,3,7 → 예제로 확정.   4,5,6 → 문제 이미지(ex1-1.png) 기준으로 필요시 교체.
-        pieceMask = new int[8];
-        pieceMask[1] = bit[2] | bit[3]; // {L,R}  ━ 가로 직선
-        pieceMask[2] = bit[0] | bit[1]; // {U,D}  ┃ 세로 직선
-        pieceMask[3] = 15;              // {U,D,L,R} ╋ (#)
-        pieceMask[4] = bit[0] | bit[2]; // {U,L}  (이미지 픽셀로 확정)
-        pieceMask[5] = bit[0] | bit[3]; // {U,R}
-        pieceMask[6] = bit[1] | bit[3]; // {D,R}
-        pieceMask[7] = bit[1] | bit[2]; // {D,L}
-
-        // 시작: (0,0)은 항상 1번, 기차는 오른쪽(R)으로 출발
-        int p1 = pieceMask[1];
-        if ((p1 & bit[3]) == 0) return 0;          // R 입구 없으면 출발 불가
-        for (int d = 0; d < 4; d++) {              // R 외 나머지 입구는 격자 밖으로(시작 터미널)
-            if (d == 3 || (p1 & bit[d]) == 0) continue;
-            if (in(dr[d], dc[d])) return 0;
+        n = grid.length;
+        m = grid[0].length;
+        
+        board = new int[n][m];
+        board[0][0] = piece[1];
+        
+        return dfs(1);
+    }
+    
+    int dfs(int pos) {
+        if(pos == n*m) {
+            return connected() ? 1 : 0;
         }
-        used[0][0] = p1;
-        return step(0, 0, 3);                      // (0,0)에서 R 방향으로 나감
+        
+        int r = pos/m;
+        int c = pos%m;
+        
+        boolean needUp = r>0 && (board[r-1][c] & D) != 0;
+        boolean needLeft = c >0 && (board[r][c-1] & R) != 0;
+        
+        int total = 0;
+        
+        if(grid[r][c] == -1) {
+            if(needUp || needLeft) return 0;
+            board[r][c] = 0;
+            return dfs(pos+1);
+        }
+        
+        if(grid[r][c] > 0) {
+            int mask = piece[grid[r][c]];
+            
+            if(!match(mask, needUp, needLeft)) return 0;
+            if(!boundaryCheck(r,c,mask)) return 0;
+            
+            board[r][c] = mask;
+            total = dfs(pos+1);
+            board[r][c] = 0;
+            
+            return total;
+        }
+        
+        int[] candidates = getCandidates(needUp, needLeft);
+        
+        for(int mask: candidates) {
+            if(!boundaryCheck(r,c,mask)) continue;
+            board[r][c] = mask;
+            total += dfs(pos+1);
+            board[r][c] = 0;
+        }
+        return total;
     }
-
-    boolean in(int r, int c) { return r >= 0 && r < n && c >= 0 && c < m; }
-
-    // (r,c)에서 mv 방향으로 나간다
-    int step(int r, int c, int mv) {
-        int nr = r + dr[mv], nc = c + dc[mv];
-        if (!in(nr, nc))                           // 격자 밖으로 = 종료
-            return (r == n - 1 && c == m - 1 && covered()) ? 1 : 0;
-        if (grid[nr][nc] == -1) return 0;          // 장애물로는 못 감
-        return enter(nr, nc, opp[mv]);             // 이웃 칸에 opp[mv] 입구로 진입
+    
+    boolean match(int mask, boolean needUp, boolean needLeft) {
+        boolean hasUp = (mask & U) != 0;
+        boolean hasLeft = (mask & L) != 0;
+        
+        return hasUp == needUp && hasLeft == needLeft;
     }
-
-    // (r,c) 칸에 entry 입구로 들어온다
-    int enter(int r, int c, int entry) {
-        int cur = used[r][c];
-        int t = grid[r][c];
-
-        if (t >= 1 && t <= 7) {                    // 고정 선로
-            int ps = pieceMask[t];
-            if ((ps & bit[entry]) == 0) return 0;  // 그 입구가 없는 선로면 불가
-            if (t != 3) {                          // 2-입구 선로(직선/곡선)
-                if (cur != 0) return 0;            // 이미 지났으면 재사용 불가
-                int exit = -1;
-                for (int d = 0; d < 4; d++)
-                    if (d != entry && (ps & bit[d]) != 0) exit = d;
-                used[r][c] = ps;
-                int res = step(r, c, exit);
-                used[r][c] = cur;
-                return res;
-            } else {                               // 3번 # : 직진(반대편으로)
-                int exit = opp[entry];
-                if ((cur & bit[entry]) != 0 || (cur & bit[exit]) != 0) return 0;
-                used[r][c] = cur | bit[entry] | bit[exit];
-                int res = step(r, c, exit);
-                used[r][c] = cur;
-                return res;
-            }
-        } else {                                   // 빈칸(0): 선로를 놓는다
-            if (cur == 0) {                         // 첫 진입 → 2-입구 선로 배치(출구 3방향 분기)
-                int tot = 0;
-                for (int exit = 0; exit < 4; exit++) {
-                    if (exit == entry) continue;
-                    used[r][c] = bit[entry] | bit[exit];
-                    tot += step(r, c, exit);
-                    used[r][c] = 0;
+    int[] getCandidates(boolean up, boolean left) {
+        if(!up && !left) return new int[]{0, D|R};
+        
+        if(up && !left) return new int[]{U|D, U|R};
+        
+        if(!up && left) return new int[]{L|R, D|L};
+        
+        return new int[]{
+            U|L, U|D|L|R
+        };
+    }
+    boolean boundaryCheck(int r, int c, int mask){
+        boolean end = r == n-1 && c == m-1;
+        
+        if(c == m-1 && (mask&R) != 0 && !end) return false;
+        
+        if(r == n-1 && (mask&D)!=0 && !end) return false;
+        return true;
+    }
+    
+    boolean connected() {
+        int[][] used = new int[n][m];
+        int[] dr = {-1,1,0,0};
+        int[] dc = {0,0,-1,1};
+        
+        int[] bits = {U,D,L,R};
+        int[] opp = {1, 0, 3, 2};  
+        
+        boolean[][][] seen = new boolean[n][m][4];
+        
+        int r= 0;
+        int c = 0;
+        int move = 3;
+        
+        used[0][0] = piece[1];
+        
+        while(true) {
+            int nr = r + dr[move];
+            int nc = c + dc[move];
+            
+            if(nr < 0 || nr >=n || nc <0 || nc>=m)  {
+                if(r!=n-1 || c!= m-1) return false;
+                
+                break;
+             }
+            
+            if(board[nr][nc] == 0) return false;
+            
+            int entry =opp[move];
+            if((board[nr][nc] & bits[entry]) == 0) return false;
+            
+            if(seen[nr][nc][entry]) return false;
+            
+            int exit = -1;
+            
+            if(board[nr][nc] == 15) {
+                exit= opp[entry];
+            } else {
+                for(int d=0; d<4; d++) {
+                    if(d == entry) continue;
+                    if((board[nr][nc] & bits[d]) !=0) {
+                        exit = d;
+                        break;
+                    }
                 }
-                return tot;
-            } else {                               // 두 번째 진입 → #(교차)로 승격
-                if (cur != (bit[0] | bit[1]) && cur != (bit[2] | bit[3])) return 0; // 직선이어야 교차 가능
-                int exit = opp[entry];
-                if ((cur & bit[entry]) != 0 || (cur & bit[exit]) != 0) return 0;
-                used[r][c] = cur | bit[entry] | bit[exit];
-                int res = step(r, c, exit);
-                used[r][c] = cur;
-                return res;
+            }
+            
+            if(exit == -1) return false;
+            used[nr][nc] |= bits[entry];
+            used[nr][nc] |= bits[exit];
+            
+            r = nr;
+            c = nc;
+            move = exit;
+        }
+        
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                if(board[i][j] == 0) continue;
+                
+                if(used[i][j] != board[i][j]) return false;
             }
         }
-    }
-
-    // 모든 고정 선로를 빠짐없이 지나갔는지 검사
-    boolean covered() {
-        for (int r = 0; r < n; r++)
-            for (int c = 0; c < m; c++) {
-                int t = grid[r][c];
-                if (t == 0 || t == -1) continue;
-                if (t == 3) { if (used[r][c] != 15) return false; }
-                else        { if (used[r][c] != pieceMask[t]) return false; }
-            }
         return true;
     }
 }

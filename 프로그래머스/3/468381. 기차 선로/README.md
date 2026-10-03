@@ -1,10 +1,10 @@
 # [level 3] 기차 선로 - 468381 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/468381?language=java) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/468381) 
 
 ### 성능 요약
 
-메모리: 79.9 MB, 시간: 1.47 ms
+메모리: 77 MB, 시간: 3.40 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 06월 14일 19:21:55
+2026년 10월 03일 11:25:24
 
 ### 문제 설명
 
