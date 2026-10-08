@@ -8,9 +8,8 @@ class Solution {
         }
         
         right = right * n;
-        long answer = right;
         
-        while(left <= right) {
+        while(left < right) {
             long mid = (left + right) / 2;
             long count = 0;
             
@@ -19,12 +18,11 @@ class Solution {
             }
             
             if(count >= n) {
-                answer = mid;
-                right = mid - 1;
+                right = mid;
             } else {
                 left = mid + 1;
             }
         }
-        return answer;
+        return left;
     }
 }
