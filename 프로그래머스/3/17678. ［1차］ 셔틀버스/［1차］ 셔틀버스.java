@@ -10,6 +10,7 @@ class Solution {
         for(int i=0; i<timetable.length; i++) {
             timetablelist[i] = getMin(timetable[i]);
         }
+        
         Arrays.sort(timetablelist);
         String answer = "";
         
@@ -31,11 +32,12 @@ class Solution {
                     for(int j=timetablelist.length-1; j>=0; j--) {
                         if(visited[j] == true) {
                             int lasttime = timetablelist[j];
-                            while(--lasttime >= 0) {
-                                if(lasttime <= startTime) {
-                                    return getTimeStr(lasttime);
-                                }
-                            }
+                            //while(--lasttime >= 0) {
+                            //    if(lasttime <= startTime) {
+                            //        return getTimeStr(lasttime);
+                            //    }
+                            //}
+                            return getTimeStr(lasttime-1);
                         }
                     }
                 }
