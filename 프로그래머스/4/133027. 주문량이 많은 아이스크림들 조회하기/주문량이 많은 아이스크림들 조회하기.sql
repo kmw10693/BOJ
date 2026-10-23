@@ -1,7 +1,5 @@
-
-
 WITH JULYA AS (
-    SELECT SHIPMENT_ID, FLAVOR, sum(TOTAL_ORDER) as TOTAL_ORDER
+    SELECT FLAVOR, sum(TOTAL_ORDER) as TOTAL_ORDER
     from JULY group by FLAVOR
 ),
 A AS(
@@ -9,5 +7,7 @@ A AS(
     join JULYA as J on F.FLAVOR = J.FLAVOR
     order by TOTAL_ORDER desc
 )
-SELECT A.FLAVOR from A
+
+SELECT FLAVOR from A
 limit 3
+
